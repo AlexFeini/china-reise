@@ -325,7 +325,7 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
   <div class="stepper" id="stepper"></div>
   <nav class="strip" id="strip" aria-label="Tage"></nav>
   <section id="day" style="display:flex;flex-direction:column;gap:12px"></section>
-  <button class="overview-link" data-overview><span><b>Buchungen &amp; Kosten</b><br><span id="ovSub"></span></span><span class="num" id="ovTotal"></span></button>
+  <button class="overview-link" data-overview><span><b>Buchungen &amp; Checkliste</b><br><span id="ovSub"></span></span><span class="chev">›</span></button>
  </div>
 
  <div class="view" id="v-ausfluege" hidden>
@@ -566,8 +566,7 @@ function renderDay(){
 }
 function renderOvLink(){
   const total=D.reduce((a,it)=>a+(it.price||0),0);const open=D.filter(x=>effStatus(x)==='todo').length,res=D.filter(x=>effStatus(x)==='warn').length;
-  document.getElementById('ovTotal').textContent=de.format(total);
-  document.getElementById('ovSub').textContent=`${open} offen · ${res} reserviert · Checkliste`;
+  document.getElementById('ovSub').textContent=`${open} offen · ${res} reserviert · Vor der Abreise`;
 }
 function renderReise(){renderTop();renderHero();renderStepper();renderStrip();renderDay();renderOvLink()}
 
