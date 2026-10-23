@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="China Reise">
+<meta name="theme-color" content="#F1F4F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1614" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>China Reise 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+/* Layout: eine Spalte wie eine Reise-App – Kopf mit Route, dann Tag für Tag; Tippen öffnet ein Detail-Blatt von unten */
+:root{
+  --bg:#F1F4F2; --surface:#FFFFFF; --sunk:#E7ECE9; --ink:#15302A; --muted:#5B6F69; --line:#D9E1DD;
+  --jade:#1E7660; --jade-soft:#DCEEE7;
+  --ok:#2B7A4B; --ok-soft:#E0F1E6; --warn:#A86A12; --warn-soft:#FBEFD9; --todo:#B8352A; --todo-soft:#FBE3E0;
+  --shadow:0 10px 40px rgba(21,48,42,.18);
+  --f-display:"Young Serif",Georgia,"Times New Roman",serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1614; --surface:#15201D; --sunk:#1B2824; --ink:#E3ECE8; --muted:#93A69F; --line:#263631;
+  --jade:#52BA98; --jade-soft:#1B3A31;
+  --ok:#62C68D; --ok-soft:#173326; --warn:#E3AA4E; --warn-soft:#3A2C14; --todo:#EC7468; --todo-soft:#3D1E1B;
+  --shadow:0 10px 40px rgba(0,0,0,.5); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1614; --surface:#15201D; --sunk:#1B2824; --ink:#E3ECE8; --muted:#93A69F; --line:#263631;
+  --jade:#52BA98; --jade-soft:#1B3A31;
+  --ok:#62C68D; --ok-soft:#173326; --warn:#E3AA4E; --warn-soft:#3A2C14; --todo:#EC7468; --todo-soft:#3D1E1B;
+  --shadow:0 10px 40px rgba(0,0,0,.5); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:640px;margin:0 auto;padding-block:20px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--jade);outline-offset:2px;border-radius:8px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:.86em}
+
+/* Kopf */
+header{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--jade);font-weight:600}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(34px,9vw,46px);line-height:1.02;margin:0;text-wrap:balance}
+.sub{color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px}
+.count{color:var(--ink);font-weight:600}
+
+/* Route */
+.route{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;margin:0 -4px;padding:4px}
+.route::-webkit-scrollbar{display:none}
+.stop{flex:0 0 auto;display:flex;align-items:center}
+.stop button{background:none;border:0;padding:6px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left}
+.stop b{font-weight:600;font-size:14px;white-space:nowrap}
+.stop small{color:var(--muted);font-size:12px;white-space:nowrap}
+.stop .arrow{color:var(--line);margin:0 4px;font-size:18px}
+.stop button:hover b{color:var(--jade)}
+
+/* Kennzahlen */
+.stats{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;text-align:left;cursor:pointer;min-width:0}
+.stat span{font-size:12px;color:var(--muted)}
+.stat strong{font-size:18px;font-variant-numeric:tabular-nums;font-weight:700}
+.stat.on{border-color:var(--jade);box-shadow:inset 0 0 0 1px var(--jade)}
+.stat.budget{cursor:default}
+.stat.s-ok strong{color:var(--ok)} .stat.s-warn strong{color:var(--warn)} .stat.s-todo strong{color:var(--todo)}
+@media (max-width:440px){.stats{grid-template-columns:1fr 1fr 1fr}.stat.budget{grid-column:1/-1;flex-direction:row;justify-content:space-between;align-items:baseline}}
+.filterinfo{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.filterinfo button{background:none;border:0;color:var(--jade);font-weight:600;cursor:pointer;padding:0}
+
+/* Tage */
+.days{display:flex;flex-direction:column;gap:18px}
+.day{display:grid;grid-template-columns:52px 1fr;gap:12px}
+.date{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);align-self:start;text-align:center;padding-top:4px}
+.date .wd{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600}
+.date .dn{font-family:var(--f-display);font-size:28px;line-height:1}
+.date .mo{font-size:11px;color:var(--muted)}
+.day.today .dn{color:var(--jade)}
+.dbody{display:flex;flex-direction:column;gap:8px;min-width:0}
+.dhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;padding-top:4px}
+.dhead h2{font-size:16px;margin:0;font-weight:700}
+.dhead .night{font-size:12px;color:var(--muted)}
+.item{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;cursor:pointer;transition:transform .12s ease,border-color .12s}
+.item:hover{border-color:var(--jade)}
+.item:active{transform:scale(.99)}
+.item.act{background:transparent;border-style:dashed}
+.ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--jade-soft);color:var(--jade)}
+.ic svg{width:18px;height:18px}
+.it-main{min-width:0;display:flex;flex-direction:column;gap:1px}
+.it-title{font-weight:600;overflow-wrap:anywhere}
+.it-meta{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.it-side{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.price{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{font-size:11px;font-weight:700;letter-spacing:.02em;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.todo{background:var(--todo-soft);color:var(--todo)}
+.flag{font-size:12px;color:var(--warn);font-weight:600}
+
+/* Vorbereitung */
+.prep{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.prep h3{margin:0 0 4px;font-family:var(--f-display);font-weight:400;font-size:20px}
+.prep label{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:4px 0}
+.prep input{accent-color:var(--jade);width:18px;height:18px;margin-top:1px;flex:none}
+.prep input:checked + span{color:var(--muted);text-decoration:line-through}
+.note{font-size:12px;color:var(--muted)}
+
+/* Detail-Blatt */
+.scrim{position:fixed;inset:0;background:rgba(10,20,18,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;max-height:88%;overflow-y:auto;background:var(--surface);border-radius:22px 22px 0 0;box-shadow:var(--shadow);transform:translateY(105%);transition:transform .26s cubic-bezier(.2,.8,.2,1);padding-block:10px calc(28px + env(safe-area-inset-bottom,0px));padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.sheet.open{transform:none}
+@media (min-width:700px){.sheet{left:50%;right:auto;width:600px;margin-left:-300px}}
+.grab{width:40px;height:4px;border-radius:4px;background:var(--line);margin:0 auto 10px}
+.sh-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sh-type{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--jade);font-weight:700}
+.close{background:var(--sunk);border:0;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1}
+.sheet h3{font-family:var(--f-display);font-weight:400;font-size:26px;line-height:1.1;margin:8px 0 4px;text-wrap:balance}
+.sh-date{color:var(--muted);margin-bottom:14px}
+.timeline{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;background:var(--sunk);border-radius:14px;padding:14px;margin-bottom:14px}
+.timeline .t{font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
+.timeline .p{font-size:13px;color:var(--muted)}
+.timeline .r{text-align:right}
+.timeline .mid{font-size:12px;color:var(--muted);text-align:center;white-space:nowrap}
+.timeline .mid::before{content:"";display:block;height:1px;background:var(--muted);opacity:.4;margin-bottom:4px;min-width:50px}
+dl{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0 0 14px}
+dt{color:var(--muted);font-size:14px}
+dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.sh-sec h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
+.sh-sec ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+.callout{border-radius:12px;padding:10px 12px;font-size:14px;margin-top:12px}
+.callout.todo{background:var(--todo-soft);color:var(--ink)} .callout.warn{background:var(--warn-soft);color:var(--ink)}
+.callout b{display:block;margin-bottom:2px}
+.done{display:flex;gap:10px;align-items:center;margin-top:14px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.done input{accent-color:var(--jade);width:18px;height:18px}
+.addr{background:var(--sunk);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.addr .zh{font-size:20px;line-height:1.35;font-weight:600;font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",var(--f-body)}
+.copy{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600;color:var(--jade);cursor:pointer}
+.sh-sec .p{margin:0}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.links a{font-size:13px;color:var(--jade);font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+footer{font-size:12px;color:var(--muted);text-align:center}
+
+/* Uhren + Heute */
+.clocks{display:flex;gap:8px;flex-wrap:wrap}
+.clock{display:flex;align-items:baseline;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px}
+.clock b{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:14px}
+.clock span{color:var(--muted)}
+.today-card{background:var(--jade);color:#fff;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.today-card .eyebrow{color:rgba(255,255,255,.8)}
+.today-card .next{display:flex;justify-content:space-between;align-items:center;gap:12px;background:rgba(255,255,255,.14);border:0;border-radius:12px;padding:10px 12px;text-align:left;cursor:pointer;color:#fff;width:100%}
+.today-card .next b{display:block;font-size:16px}
+.today-card .next small{opacity:.85;font-size:13px}
+.today-card .in{font-family:var(--f-mono);font-size:15px;white-space:nowrap;font-weight:500}
+.today-card .list{display:flex;flex-direction:column;gap:2px;font-size:14px;opacity:.95}
+
+/* Views + Tab-Leiste */
+.view{display:flex;flex-direction:column;gap:22px}
+.wrap{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding-block:6px calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+.tabs button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:10.5px;min-width:0;font-weight:600;color:var(--muted);cursor:pointer}
+.tabs svg{width:22px;height:22px}
+.tabs button[aria-selected="true"]{color:var(--jade)}
+h2.vh{font-family:var(--f-display);font-weight:400;font-size:32px;margin:0;line-height:1.05}
+.lead{color:var(--muted);margin:-14px 0 0}
+
+/* Karten-Buttons */
+.mapbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.mapbtns a,.mapbtns button{font-size:13px;color:var(--jade);font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 12px;background:var(--surface);cursor:pointer}
+.mapbtns .primary{background:var(--jade);color:#fff;border-color:var(--jade)}
+
+/* Großanzeige (Taxi-Karte / Satz zeigen) */
+.big{position:fixed;inset:0;z-index:40;background:var(--surface);display:flex;flex-direction:column;justify-content:center;gap:18px;padding-block:calc(24px + env(safe-area-inset-top,0px)) calc(24px + env(safe-area-inset-bottom,0px));padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));text-align:center}
+.big .zh{font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",var(--f-body);font-weight:700;font-size:clamp(30px,9vw,56px);line-height:1.3;overflow-wrap:anywhere}
+.big .zh.sm{font-size:clamp(22px,6.5vw,40px);font-weight:600}
+.big .hint{font-family:"PingFang SC","Noto Sans SC",var(--f-body);font-size:20px;color:var(--jade);font-weight:600}
+.big .de{color:var(--muted);font-size:15px}
+.big .py{color:var(--muted);font-size:17px;font-style:italic}
+.big .x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:0;background:var(--sunk);font-size:24px;cursor:pointer}
+
+/* Listen (Hilfe, Sätze) */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.card h3{margin:0;font-family:var(--f-display);font-weight:400;font-size:20px}
+.sos{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sos a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:14px 6px;border-radius:14px;background:var(--todo-soft);color:var(--todo);text-decoration:none}
+.sos a b{font-family:var(--f-mono);font-size:30px;font-variant-numeric:tabular-nums}
+.sos a span{font-size:13px;font-weight:600;color:var(--ink)}
+.rowbtn{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:10px 0;cursor:pointer}
+.rowbtn:first-of-type{border-top:0}
+.rowbtn .t{font-weight:600}
+.rowbtn .s{font-size:13px;color:var(--muted)}
+.rowbtn .z{font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",var(--f-body);font-size:15px}
+.chev{color:var(--muted);font-size:20px}
+.cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.cats::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--jade);border-color:var(--jade);color:#fff}
+.phrase{display:grid;grid-template-columns:1fr auto;gap:2px 10px;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:12px 0;cursor:pointer}
+.phrase:first-child{border-top:0}
+.phrase .d{font-weight:600}
+.phrase .z{font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",var(--f-body);font-size:20px;grid-column:1}
+.phrase .p{font-size:13px;color:var(--muted);font-style:italic;grid-column:1}
+.phrase .chev{grid-column:2;grid-row:1/4;align-self:center}
+
+/* Ausgaben */
+.exp-form{display:grid;grid-template-columns:1fr auto;gap:10px}
+.exp-form .full{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12px;color:var(--muted);font-weight:600}
+.field input,.field select{font:inherit;font-size:16px;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+.amount input{font-family:var(--f-mono);font-size:22px}
+.cur{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;align-self:end}
+.cur button{border:0;background:var(--sunk);padding:12px 16px;font-weight:700;cursor:pointer;font-size:16px}
+.cur button[aria-pressed="true"]{background:var(--jade);color:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.add{background:var(--jade);color:#fff;border:0;border-radius:12px;padding:12px;font-weight:700;font-size:16px;cursor:pointer}
+.err{color:var(--todo);font-size:13px}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sum div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.sum span{font-size:12px;color:var(--muted);display:block}
+.sum strong{font-size:20px;font-variant-numeric:tabular-nums}
+.sum .wide{grid-column:1/-1}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center;font-size:13px}
+.bar .tr{height:8px;background:var(--sunk);border-radius:8px;overflow:hidden}
+.bar .tr i{display:block;height:100%;background:var(--jade);border-radius:8px}
+.bar .v{font-variant-numeric:tabular-nums;font-weight:600}
+.eday h4{margin:6px 0 2px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between}
+.erow{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.erow .c{font-weight:600}
+.erow .n{font-size:13px;color:var(--muted)}
+.erow .a{text-align:right;font-variant-numeric:tabular-nums}
+.erow .a small{display:block;color:var(--muted);font-size:12px}
+.del{border:0;background:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px 6px}
+.del.confirm{color:var(--todo);font-size:13px;font-weight:700;border:1px solid var(--todo);border-radius:999px}
+.rate{display:flex;align-items:center;gap:8px;font-size:14px;flex-wrap:wrap}
+.rate input{width:90px;font:inherit;font-family:var(--f-mono);background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:6px 8px;color:var(--ink)}
+.acc{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.acc details{border-top:1px solid var(--line)}
+.acc details:first-child{border-top:0}
+.acc summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary b{font-size:16px}
+.acc summary small{color:var(--muted);font-size:13px;grid-column:1}
+.acc summary .chev{grid-column:2;grid-row:1/3;display:inline-block;transition:transform .15s}
+.acc details[open] summary .chev{transform:rotate(90deg)}
+.acc .body{padding:0 16px 14px;display:flex;flex-direction:column;gap:8px;font-size:14px}
+.acc .body ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.acc .body p{margin:0}
+.wx{width:100%;border-collapse:collapse;font-size:14px}
+.wx th,.wx td{text-align:left;padding:6px 4px;border-top:1px solid var(--line)}
+.wx th{font-size:12px;color:var(--muted);font-weight:600;border-top:0}
+.wx td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.exc{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.exc:first-of-type{border-top:0}
+.exc .open{background:none;border:0;padding:0;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
+.exc .t{font-weight:700;font-size:15px}
+.exc .z{font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",var(--f-body);font-size:14px;color:var(--muted)}
+.exc .m{font-size:13px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.tag.plan{background:var(--jade-soft);color:var(--jade)}
+.tag.near{background:var(--ok-soft);color:var(--ok)}
+.star{background:none;border:1px solid var(--line);border-radius:999px;width:38px;height:38px;font-size:18px;cursor:pointer;color:var(--muted)}
+.star[aria-pressed="true"]{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}
+.citynote{font-size:13px;color:var(--muted);margin:-4px 0 0}
+.empty{color:var(--muted);font-size:14px;text-align:center;padding:12px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+ <div class="view" id="v-reise">
+  <header>
+    <div class="eyebrow">Reiseplan · 13.–27. November 2026</div>
+    <h1>China Reise</h1>
+    <div class="sub"><span class="count" id="countdown"></span><span>15 Tage · 6 Stationen · 14 Nächte</span></div>
+  </header>
+  <div class="clocks" id="clocks"></div>
+  <section class="today-card" id="today" hidden></section>
+
+  <nav class="route" id="route" aria-label="Route"></nav>
+
+  <section class="stats" id="stats"></section>
+  <div class="filterinfo" id="filterinfo" hidden></div>
+
+  <main class="days" id="days"></main>
+
+  <section class="prep" aria-labelledby="prep-h">
+    <h3 id="prep-h">Vor der Abreise</h3>
+    <div id="prep"></div>
+    <div class="note">Häkchen werden nur auf diesem Gerät gespeichert.</div>
+  </section>
+
+  <footer>Gesamt gebucht / reserviert: <b id="total"></b> · 917,78 € beinhaltet Hin- und Rückflug Frankfurt ⇄ Shanghai</footer>
+ </div>
+
+ <div class="view" id="v-ausfluege" hidden>
+  <h2 class="vh">Ausflüge</h2>
+  <p class="lead">Ideen für jede Station. Mit ☆ merkst du dir, was du machen willst.</p>
+  <div class="cats" id="exCats"></div>
+  <div id="exList" style="display:flex;flex-direction:column;gap:14px"></div>
+ </div>
+
+ <div class="view" id="v-ausgaben" hidden>
+  <h2 class="vh">Ausgaben</h2>
+  <p class="lead">Was du vor Ort ausgibst, in Yuan oder Euro.</p>
+  <form class="card" id="expForm" novalidate>
+    <div class="exp-form">
+      <div class="field amount"><label for="eAmt">Betrag</label><input id="eAmt" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+      <div class="cur" role="group" aria-label="Währung"><button type="button" id="curCNY" data-cur="CNY" aria-pressed="true">¥</button><button type="button" id="curEUR" data-cur="EUR" aria-pressed="false">€</button></div>
+      <div class="full two">
+        <div class="field"><label for="eCat">Kategorie</label><select id="eCat"></select></div>
+        <div class="field"><label for="eDate">Datum</label><input id="eDate" type="date" min="2026-11-13" max="2026-11-27"></div>
+      </div>
+      <div class="field full"><label for="eNote">Notiz (optional)</label><input id="eNote" autocomplete="off" placeholder="z. B. Hotpot Liziba"></div>
+      <div class="err full" id="eErr" hidden></div>
+      <button class="add full" type="submit">Ausgabe hinzufügen</button>
+    </div>
+  </form>
+  <div class="sum" id="expSum"></div>
+  <section class="card" id="expCats"></section>
+  <section class="card" id="expList"></section>
+  <div class="rate"><label for="eRate">Kurs: 1 € =</label><input id="eRate" inputmode="decimal"><span>¥</span><span class="note">Stand 23.10.2026 · anpassbar</span></div>
+  <p class="note">Ausgaben werden nur auf diesem Gerät gespeichert.</p>
+ </div>
+
+ <div class="view" id="v-saetze" hidden>
+  <h2 class="vh">Sätze</h2>
+  <p class="lead">Antippen, um den Satz groß zu zeigen.</p>
+  <div class="cats" id="phCats"></div>
+  <section class="card" id="phList"></section>
+ </div>
+
+ <div class="view" id="v-infos" hidden>
+  <h2 class="vh">Infos</h2>
+  <p class="lead">Das Wichtigste für China, kurz und offline.</p>
+  <div class="acc" id="infoAcc"></div>
+  <p class="note">Stand Oktober 2026. Einreiseregeln kurz vor Abflug noch einmal beim Auswärtigen Amt prüfen.</p>
+ </div>
+
+ <div class="view" id="v-hilfe" hidden>
+  <h2 class="vh">Hilfe</h2>
+  <section class="card">
+    <h3>Notruf China</h3>
+    <div class="sos">
+      <a href="tel:110"><b>110</b><span>Polizei</span></a>
+      <a href="tel:120"><b>120</b><span>Rettung</span></a>
+      <a href="tel:119"><b>119</b><span>Feuerwehr</span></a>
+    </div>
+    <p class="note">Kostenlos von jedem Handy. Falls Antippen nicht wählt: Nummer selbst eintippen.</p>
+  </section>
+  <section class="card" id="taxiList"><h3>Taxi-Karten</h3></section>
+ </div>
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Bereiche">
+  <button role="tab" id="tab-reise" data-tab="reise" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Reise</button>
+  <button role="tab" id="tab-ausfluege" data-tab="ausfluege" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20l5-9 4 6 3-4 4 7"/><circle cx="16" cy="6" r="2"/></svg>Ausflüge</button>
+  <button role="tab" id="tab-ausgaben" data-tab="ausgaben" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l5 7 5-7M6 11h12M6 15h12M12 11v9"/></svg>Ausgaben</button>
+  <button role="tab" id="tab-saetze" data-tab="saetze" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>Sätze</button>
+  <button role="tab" id="tab-infos" data-tab="infos" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h6M9 8h3"/></svg>Infos</button>
+  <button role="tab" id="tab-hilfe" data-tab="hilfe" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Hilfe</button>
+</nav>
+<div class="big" id="big" hidden role="dialog" aria-modal="true" aria-label="Großanzeige"></div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title" aria-hidden="true"></aside>
+
+<script>
+const ICON={
+ flight:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 13.5 3 11l1.5-1.5 8 1L17 6a2 2 0 0 1 3 3l-4.5 4.5 1 8L15 23l-2.5-7.5-3 3V21l-1.5 1-1-3.5L3.5 17l1-1.5h2.5z"/></svg>',
+ train:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="4"/><path d="M5 11h14M9 21l1.5-4M15 21l-1.5-4M9 14h.01M15 14h.01"/></svg>',
+ hotel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/></svg>',
+ car:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16V11l2-5h10l2 5v5M3 16h18v3H3zM5 11h14"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/></svg>',
+ sight:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20l5-9 4 6 3-4 4 7"/><circle cx="16" cy="6" r="2"/></svg>',
+ free:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+ box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5zM3 7.5 12 12l9-4.5M12 12v9"/></svg>'
+};
+const TYPE={free:'Freizeit',flight:'Flug',train:'Zug',hotel:'Hotel',car:'Transfer',sight:'Programm',box:'Erledigen'};
+const STATUS={ok:'Gebucht',warn:'Reserviert',todo:'Offen'};
+
+const D=[
+ {id:'f1',tz:1,date:'2026-11-13',type:'flight',title:'Frankfurt → Shanghai',from:'Frankfurt (FRA) T1',to:'Shanghai Pudong (PVG)',toZh:'上海浦东国际机场',dep:'18:40',arr:'12:40',arrNote:'+1 Tag, 14.11.',dur:'11 h',airline:'Air China CA936 · Economy',platform:'Gotogate',status:'ok',price:917.78,shot:true,
+  notes:['Preis beinhaltet Hin- und Rückflug Frankfurt ⇄ Shanghai.','Online-Check-in geht nicht über Gotogate, sondern bei Air China mit dem Airline-Code aus der Gotogate-App.','Vom Flughafen Pudong zum Hotel am Bund rechne mit gut 1 h (Taxi oder Metro Linie 2).','Ankunft am 14.11. mittags – Check-in im Hotel ab 12:00.']},
+ {id:'w1',date:'2026-11-14',type:'car',way:1,title:'Flughafen → Hotel am Bund',from:'Flughafen Pudong (PVG)',to:'Shanghai Bund South China Harbour View Hotel',dep:'13:30',dur:'ca. 1 h',goZh:'上海外滩中南海滨酒店(海湾大厦)',goAddr:'上海市虹口区黄浦路53号',tips:['Nach Einreise und Gepäck realistisch gegen 13:30 los.','Taxi am offiziellen Taxistand oder DiDi – keine Fahrer annehmen, die dich in der Halle ansprechen.','Alternative: Metro Linie 2 bis East Nanjing Road (ca. 75 Min.), dann ca. 15 Min. zu Fuß.']},
+ {id:'a1',date:'2026-11-14',type:'free',title:'Ankommen & Freizeit',place:'Shanghai'},
+ {id:'h1',date:'2026-11-14',end:'2026-11-16',type:'hotel',title:'Shanghai Bund South China Harbour View Hotel',hotelZh:'上海外滩中南海滨酒店(海湾大厦)',place:'Shanghai',ci:'12:00–23:59',co:'bis 12:00',nights:2,room:'Einzelzimmer mit Stadtblick',breakfast:true,platform:'Booking',phone:'+86 21 5666 0808',status:'ok',price:214.75,shot:true,
+  addr:'No. 53 Huangpu Road, Hongkou, Shanghai 200080',zh:'上海市虹口区黄浦路53号',
+  cancel:'Kostenlos stornierbar bis 9. Nov. 2026, 23:59 – danach fallen Gebühren an.',notes:['Liegt am nördlichen Ende des Bund – zu Fuß zum Bund und zur Nanjing Road.','Bei Check-in die Check-in-Nummer aus der Booking-App bereithalten.']},
+ {id:'a2',date:'2026-11-15',type:'free',title:'Freizeit',place:'Shanghai'},
+ {id:'w2',date:'2026-11-16',type:'car',way:1,title:'Hotel → Flughafen Pudong',from:'Shanghai Bund South China Harbour View Hotel',to:'Flughafen Pudong (PVG) T2',dep:'08:30',dur:'ca. 1 h',goZh:'上海浦东国际机场 2号航站楼',goAddr:'',tips:['Flug HO1153 um 11:30 – spätestens 08:30 losfahren, vorher auschecken.','Am Morgen kann es auf den Hochstraßen Stau geben, lieber etwas früher.']},
+ {id:'f2',date:'2026-11-16',type:'flight',title:'Shanghai → Guilin',from:'Shanghai Pudong (PVG) T2',fromZh:'上海浦东国际机场 2号航站楼',to:'Guilin Liangjiang (KWL) T2',dep:'11:30',arr:'14:25',dur:'2:55 h',airline:'Juneyao Airlines HO1153 · Economy · A319/A320/A321 · Mahlzeit',platform:'Trip.com',status:'ok',price:134.48,shot:true,
+  baggage:'Handgepäck: 1 Stück, max. 5 kg, 20 × 40 × 55 cm. Aufgabegepäck: 40 × 60 × 100 cm (Gewicht im Screenshot verdeckt, vermutlich 20 kg – bitte prüfen).',
+  notes:['Abflug ab Pudong (PVG), Terminal 2 – rechtzeitig vom Hotel los, Check-out ist erst 12:00.','Mit dem Airline-Code aus der Trip.com-Buchung kannst du bei Juneyao online einchecken.','Powerbanks ohne 3C-Logo sind auf Inlandsflügen in China verboten.']},
+ {id:'t1',date:'2026-11-16',type:'car',title:'Guilin → Yangshuo',from:'Flughafen Guilin',to:'The Blossom Dreamscape Boutique Hotel',dep:'14:45',goZh:'花梦间酒店(阳朔遇龙河夏棠码头店)',goAddr:'阳朔县 遇龙河生态公园 夏棠寨码头往前200米',dur:'ca. 1–1,5 h',status:'todo',
+  todo:'Transfer zum Hotel noch organisieren.',tips:['Hoteltransfer beim Hotel anfragen oder per DiDi buchen – das Hotel liegt in Baisha (Yulong-Fluss), nicht im Ortskern von Yangshuo.','Ankunft Guilin 14:25 – mit Gepäck realistisch gegen 16:30 in Yangshuo.']},
+ {id:'h2',date:'2026-11-16',end:'2026-11-19',type:'hotel',title:'The Blossom Dreamscape Boutique Hotel – Yulong River',hotelZh:'花梦间酒店(阳朔遇龙河夏棠码头店)',place:'Yangshuo',ci:'ab 14:00',co:'bis 12:00',nights:3,room:'Doppelzimmer mit Bergblick',breakfast:true,platform:'Booking',status:'ok',price:156.43,shot:true,
+  addr:'Xinglong Village, Xijian Village Committee, Baisha Town, Yangshuo County, Guilin, Guangxi 541900',zh:'阳朔县 遇龙河生态公园 夏棠寨码头往前200米 · 花梦间酒店',
+  notes:['Laut Buchung musst du nichts im Voraus bezahlen – Zahlung vermutlich vor Ort.','Liegt in Baisha direkt am Yulong River, außerhalb des Ortskerns.','Das Hotel bietet Wäscheservice und organisierte Touren an – ggf. auch für den Transfer vom Flughafen fragen.','Chinesische Angabe laut Trip.com: liegt 200 m hinter dem Bootsanleger Xiatangzhai am Yulong River. Taxifahrern am besten Hotelname + diese Beschreibung zeigen.']},
+ {id:'a3',date:'2026-11-17',type:'free',title:'Freizeit',place:'Yangshuo'},
+ {id:'a4',date:'2026-11-18',type:'free',title:'Freizeit',place:'Yangshuo'},
+ {id:'w3',date:'2026-11-19',type:'car',way:1,title:'Hotel → Bahnhof Guilin Nord',from:'The Blossom Dreamscape Boutique Hotel',to:'Bahnhof Guilin Nord',dep:'12:30',dur:'ca. 1,5 h',goZh:'桂林北站',goAddr:'',tips:['Zug um 14:55 (Ersatzzug ggf. 14:38) – etwa 45 Min. vor Abfahrt am Bahnhof sein.','Das Hotel kann einen Fahrer organisieren – am Vortag fragen. Sonst DiDi.']},
+ {id:'z1',date:'2026-11-19',type:'train',title:'Guilin Nord → Zhangjiajie West',from:'Guilin Nord (Guilinbei)',fromZh:'桂林北站',to:'Zhangjiajie West (Zhangjiajiexi)',dep:'14:55',arr:'22:07',dur:'7:12 h',platform:'Trip.com',seat:'1. Klasse, 2. Klasse',status:'warn',price:78.87,priceSplit:'Ticket 71,87 € + Gebühr 7,00 €',shot:true,
+  alt:'Kein Umstieg. In der Reservierung stehen zwei Abfahrtszeiten (14:55 und 14:38) und zwei Klassen – das sind sehr wahrscheinlich Ersatzoptionen: Trip.com versucht bei der Freigabe Anfang November zuerst deinen Wunschzug und nimmt sonst den Ersatzzug bzw. die andere Klasse. Welcher Zug es wird, steht dann im ausgestellten Ticket.',
+  todo:'Reserviert – das Ticket wird erst Anfang November freigegeben. Dann in Trip.com prüfen, ob es ausgestellt ist.',notes:['Von Baisha zum Bahnhof Guilin Nord rechtzeitig losfahren (ca. 1–1,5 h).','Ankunft 22:07 – Check-in im Hotel Zhangjiajie nur bis 00:00! Späte Ankunft vorher ankündigen.','Für Züge in China den Reisepass bereithalten.']},
+ {id:'w4',date:'2026-11-19',type:'car',way:1,title:'Bahnhof → Homestay',from:'Bahnhof Zhangjiajie West',to:'Jingjing Yunxi Weitang Homestay',dep:'22:15',dur:'ca. 15–20 Min.',goZh:'微糖民宿(张家界天门山索道店)',goAddr:'张家界市永定区官黎坪街道赵家院子三巷15号',tips:['Ankunft 22:07, Check-in nur bis 00:00.','Taxi vor dem Bahnhof oder DiDi. Taxi-Karte zeigen.']},
+ {id:'h3',date:'2026-11-19',end:'2026-11-22',type:'hotel',title:'Jingjing Yunxi Weitang Homestay',hotelZh:'微糖民宿(张家界天门山索道店)',place:'Zhangjiajie',ci:'14:00–00:00',co:'08:00–12:00',nights:3,room:'Superior Zimmer mit Queensize-Bett',platform:'Booking',status:'ok',price:43.86,shot:true,
+  addr:'Group 7, GuanliPing Community Committee, GuanliPing Office, Yongding District, Zhangjiajie, Hunan 427000',zh:'张家界市永定区官黎坪街道赵家院子三巷15号',
+  notes:['Check-in nur bis Mitternacht – dein Zug kommt um 22:07 an.','3 Gehminuten zur Tianmen-Mountain-Seilbahn, nah an Bahnhof und Flughafen.','Kostenlose Gepäckaufbewahrung – praktisch am Abreisetag (Zug 13:28).','Die Unterkunft bietet Tickets und Routenplanung für die Umgebung an.'],missing:'Chinesische Adresse aus dem Trip.com-Eintrag „微糖民宿 (Tianmen-Seilbahn)“ – bitte kurz bei der Unterkunft bestätigen.'},
+ {id:'a5',date:'2026-11-20',type:'free',title:'Freizeit',place:'Zhangjiajie'},
+ {id:'a6',date:'2026-11-21',type:'free',title:'Freizeit',place:'Zhangjiajie'},
+ {id:'w5',date:'2026-11-22',type:'car',way:1,title:'Homestay → Bahnhof Zhangjiajie West',from:'Jingjing Yunxi Weitang Homestay',to:'Bahnhof Zhangjiajie West',dep:'12:15',dur:'ca. 15–20 Min.',goZh:'张家界西站',goAddr:'',tips:['Zug um 13:28 – Check-out bis 12:00 passt.','Gepäck kann bis zur Abfahrt im Homestay bleiben.']},
+ {id:'z2',date:'2026-11-22',type:'train',title:'Zhangjiajie West → Chongqing East',from:'Zhangjiajie West',fromZh:'张家界西站',to:'Chongqing East (Chongqing Osten)',dep:'13:28',arr:'15:56',dur:'2:28 h',platform:'Trip.com',seat:'2. Klasse',status:'warn',price:35.06,priceSplit:'Ticket 30,06 € + Gebühr 5,00 €',shot:true,
+  todo:'Reserviert – das Ticket wird erst Anfang November freigegeben. Dann in Trip.com prüfen, ob es ausgestellt ist.',notes:['Check-out im Hotel Zhangjiajie bis 12:00 – passt zur Abfahrt 13:28.']},
+ {id:'w6',date:'2026-11-22',type:'car',way:1,title:'Bahnhof → Hotel Chongqing',from:'Bahnhof Chongqing East',to:'YOLO Cloud Private Hot Spring Design Hotel',dep:'16:10',dur:'ca. 45 Min.',goZh:'YOLO云端私汤设计师酒店',goAddr:'重庆两江新区观音桥街道北城天街40号万汇中心2栋34层',tips:['Ankunft 15:56. Taxi oder DiDi zum Wanhui Center in Guanyinqiao.','Rezeption im 34. Stock von Gebäude 2.']},
+ {id:'h4',date:'2026-11-22',end:'2026-11-25',type:'hotel',title:'YOLO Cloud Private Hot Spring Design Hotel',hotelZh:'YOLO云端私汤设计师酒店',place:'Chongqing',ci:'nach 15:00',co:'vor 12:00',nights:3,room:'1 Zimmer',platform:'Trip.com',status:'ok',price:160.89,shot:true,
+  addr:'34th Floor, Building 2, Wanhui Center, No. 40 Beichengtian Street, Guanyinqiao, Liangjiang New Area, Chongqing',zh:'重庆两江新区观音桥街道北城天街40号万汇中心2栋34层',
+  cancel:'Kostenlose Stornierung war bis 1. Okt. 2026 möglich – jetzt nicht mehr erstattungsfähig.',notes:['Rezeption im 34. Stock von Gebäude 2 (Wanhui Center), Gegend Guanyinqiao.','24-Stunden-Rezeption und kostenlose Gepäckaufbewahrung – Gepäck am 25.11. bis zum Flug dort lassen.','Kein Transferservice vom Hotel.']},
+ {id:'a7',date:'2026-11-22',type:'free',title:'Freizeit',place:'Chongqing'},
+ {id:'a8',date:'2026-11-23',type:'free',title:'Freizeit',place:'Chongqing'},
+ {id:'a9',date:'2026-11-24',type:'free',title:'Freizeit',place:'Chongqing'},
+ {id:'a10',date:'2026-11-25',type:'free',title:'Freizeit bis zum Flug',place:'Chongqing'},
+ {id:'b1',date:'2026-11-23',type:'box',title:'Drohne nach Shanghai schicken',when:'Am 23. oder 24.11. aus Chongqing',from:'Chongqing',to:'Homeinn Selected Hotel Pudong Airport East Station',status:'todo',
+  addr:'No. 1026 Shiwan 8th Road, Shiwan Town, Pudong New Area, Shanghai 201202',zh:'上海浦东新区施湾镇施湾八路1026号',
+  todo:'Drohne + Akkus am 23. oder 24.11. an das Flughafenhotel in Pudong schicken (Adresse unten).',tips:['Versand innerhalb Chinas dauert meist 1–3 Tage – am 23./24. abgeschickt, ist das Paket vor deiner Ankunft am 26.11. abends da.','Beim Versanddienst (z. B. SF Express) vorher klären, ob Akkus angenommen werden.','Empfänger: Homeinn Selected Hotel (如家商旅酒店 上海浦东国际机场东站店), Gast: dein Name wie in der Buchung.','Hotel vorab informieren, dass ein Paket für dich ankommt – Name wie in der Buchung.']},
+ {id:'w7',date:'2026-11-25',type:'car',way:1,title:'Hotel → Flughafen Chongqing',from:'YOLO Cloud Private Hot Spring Design Hotel',to:'Flughafen Jiangbei (CKG) T3',dep:'17:00',dur:'ca. 30–40 Min.',goZh:'重庆江北国际机场 T3航站楼',goAddr:'',tips:['Flug CZ8818 um 19:30 – etwa 1,5 h vorher am Terminal 3 sein.','Feierabendverkehr einplanen.']},
+ {id:'f3',date:'2026-11-25',type:'flight',title:'Chongqing → Beijing',from:'Chongqing Jiangbei (CKG) T3',fromZh:'重庆江北国际机场 T3航站楼',to:'Beijing Daxing (PKX)',dep:'19:30',arr:'22:00',dur:'2:30 h',airline:'China Southern CZ8818 · Economy · A320-200 · Mahlzeit',platform:'Trip.com',status:'ok',price:99.40,shot:true,
+  notes:['Landung in Daxing – der Flughafen liegt weit im Süden, bis zum Hotel in Dongcheng rechne mit gut 1 h.','Powerbanks ohne 3C-Logo sind auf Inlandsflügen in China verboten.']},
+ {id:'w8',date:'2026-11-25',type:'car',way:1,title:'Flughafen Daxing → Hotel',from:'Flughafen Daxing (PKX)',to:'The Yard Hotel Beijing, Nanluogu Alley',dep:'22:30',dur:'ca. 1–1,5 h',goZh:'懿庭臻舍酒店(北京南锣鼓巷故宫地铁站店)',goAddr:'北京东城区交道口南大街140号',tips:['Landung 22:00. Um diese Zeit am einfachsten Taxi oder DiDi.','Ankunft im Hotel gegen 23:30–24:00 – späten Check-in vorher ankündigen.']},
+ {id:'h5',date:'2026-11-25',end:'2026-11-26',type:'hotel',title:'The Yard Hotel Beijing, Nanluogu Alley',hotelZh:'懿庭臻舍酒店(北京南锣鼓巷故宫地铁站店)',place:'Beijing',ci:'nach 14:00',co:'vor 12:00',nights:1,room:'1 Zimmer',breakfast:true,platform:'Trip.com',status:'ok',price:68.87,shot:true,
+  addr:'No. 140 Jiaodaokou South Street, Dongcheng, Beijing',zh:'北京东城区交道口南大街140号',
+  cancel:'Kostenlos stornierbar bis 25. Nov. 2026, 12:00.',notes:['Ankunft erst gegen 23:00 – späten Check-in ankündigen.','Nahe Nanluogu Alley (Hutong-Viertel).','24-Stunden-Rezeption und Gepäckaufbewahrung – Gepäck am 26.11. nach dem Check-out dort lassen.']},
+ {id:'a11',date:'2026-11-26',type:'free',title:'Ausflug Chinesische Mauer',place:'Mutianyu',placeZh:'慕田峪长城',exLink:'bj1'},
+ {id:'t2',date:'2026-11-26',type:'car',title:'Beijing ⇄ Mutianyu',from:'Hotel Beijing',to:'Mutianyu, danach Beijing South',dep:'08:00',goZh:'慕田峪长城',dur:'ca. 1,5 h je Weg',status:'todo',
+  todo:'Privaten Fahrer buchen (empfohlen).',tips:['Früh los: Check-out ist 12:00, dein Zug fährt 18:00 ab Beijing South. Am besten gegen 8:00 abfahren und spätestens 15:30 an der Mauer zurück aufbrechen.','Gepäck gleich mit ins Auto nehmen und den Fahrer direkt bis Beijing South fahren lassen – spart den Umweg zum Hotel.']},
+ {id:'z3',date:'2026-11-26',type:'train',title:'Beijing South → Shanghai',from:'Beijing South (Beijingnan)',fromZh:'北京南站',to:'Shanghai Hauptbahnhof (上海站)',dep:'18:00',arr:'22:45',dur:'4:45 h',trainNo:'G29',platform:'Trip.com',seat:'2. Klasse',status:'warn',price:90.77,priceSplit:'Ticket 83,77 € + Gebühr 7,00 €',shot:true,
+  todo:'Reserviert – das Ticket wird erst Anfang November freigegeben. Dann in Trip.com prüfen, ob es ausgestellt ist.',notes:['Ankunft am Bahnhof „Shanghai“ (上海站, Hauptbahnhof im Stadtzentrum) – nicht Hongqiao.','Zum Flughafenhotel in Shiwan sind es rund 50 km: um 23 Uhr am besten Taxi oder DiDi, ca. 1 h. Die Taxi-Karte fürs Hotel findest du unter Hilfe.','Hotel vorab informieren, dass du erst gegen Mitternacht ankommst.']},
+ {id:'w9',date:'2026-11-26',type:'car',way:1,title:'Bahnhof Shanghai → Flughafenhotel',from:'Bahnhof Shanghai (上海站)',to:'Homeinn Selected Hotel Pudong Airport East Station',dep:'23:00',dur:'ca. 1 h',goZh:'如家商旅酒店(上海浦东国际机场东站店)',goAddr:'上海浦东新区施湾镇施湾八路1026号',tips:['Ankunft 22:45. Taxi am Bahnhof oder DiDi, ca. 50 km.','Metro ist um diese Zeit keine gute Option.']},
+ {id:'h6',date:'2026-11-26',end:'2026-11-27',type:'hotel',title:'Homeinn Selected Hotel Pudong Airport East Station',hotelZh:'如家商旅酒店(上海浦东国际机场东站店)',place:'Shanghai Pudong',ci:'nach 08:00',co:'vor 14:00',nights:1,room:'1 Zimmer',breakfast:true,platform:'Trip.com',status:'ok',price:36.95,shot:true,
+  addr:'No. 1026 Shiwan 8th Road, Shiwan Town, Pudong New Area, Shanghai 201202',zh:'上海浦东新区施湾镇施湾八路1026号',
+  cancel:'Kostenlos stornierbar bis 26. Nov. 2026, 18:00.',notes:['Hier wartet die Drohne mit den Akkus.','Frühstück ist inklusive – wegen des Rückflugs um 11:05 früh frühstücken, gegen 08:00 zum Terminal 2 aufbrechen.']},
+ {id:'w10',date:'2026-11-27',type:'car',way:1,title:'Hotel → Flughafen Pudong T2',from:'Homeinn Selected Hotel',to:'Flughafen Pudong (PVG) T2',dep:'08:00',dur:'ca. 15–20 Min.',goZh:'上海浦东国际机场 2号航站楼',goAddr:'',tips:['Rückflug CA935 um 11:05 – gegen 08:30 am Terminal 2 sein.','An der Rezeption nach einem Flughafen-Shuttle fragen, sonst Taxi.','Drohne nicht vergessen – Akkus ins Handgepäck.']},
+ {id:'f4',date:'2026-11-27',type:'flight',title:'Shanghai → Frankfurt',from:'Shanghai Pudong (PVG) T2',fromZh:'上海浦东国际机场 2号航站楼',to:'Frankfurt (FRA)',dep:'11:05',arr:'16:35',dur:'12:30 h',airline:'Air China CA935 · Economy',platform:'Gotogate',status:'ok',priceNote:'inkl. oben',shot:true,
+  notes:['Preis ist im Hinflug (917,78 €) enthalten.','Online-Check-in bei Air China mit dem Airline-Code aus der Gotogate-App.','Für den internationalen Flug spätestens gegen 08:30 am Terminal 2 sein.','Drohnen-Akkus ins Handgepäck.']}
+];
+
+const STOPS=[['Shanghai','2026-11-14',2],['Yangshuo','2026-11-16',3],['Zhangjiajie','2026-11-19',3],['Chongqing','2026-11-22',3],['Beijing','2026-11-25',1],['Shanghai Pudong','2026-11-26',1]];
+
+const PREP=[['p1','Alipay und/oder WeChat Pay mit Karte einrichten'],['p2','eSIM oder VPN für Google, WhatsApp & Co.'],['p3','Anfang November: prüfen, ob die 3 Zugtickets in Trip.com ausgestellt sind'],['p4','Hotel-Adressen auf Chinesisch speichern'],['p5','Karten-App für China (z. B. Amap) installieren'],['p6','Reisepass-Kopie digital ablegen'],['p8','Powerbanks mit 3C-Logo mitnehmen (Pflicht auf Inlandsflügen)']];
+
+const de=new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'});
+const fmtDay=iso=>{const d=new Date(iso+'T12:00:00');return{wd:d.toLocaleDateString('de-DE',{weekday:'short'}).replace('.',''),dn:d.getDate(),mo:d.toLocaleDateString('de-DE',{month:'short'}),long:d.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'})}};
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let done=store.get('cr-done')||{};
+let prep=store.get('cr-prep')||{};
+let filter=null;
+const effStatus=it=>it.status&&it.status!=='ok'&&done[it.id]?'ok':it.status;
+
+function dates(){const out=[];let d=new Date('2026-11-13T12:00:00');const e=new Date('2026-11-27T12:00:00');while(d<=e){out.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1)}return out}
+function nightIn(iso){const h=D.find(x=>x.type==='hotel'&&iso>=x.date&&iso<x.end);return h?h.place:(iso==='2026-11-13'?'im Flugzeug':null)}
+
+function meta(it){
+  if(it.type==='hotel')return `${it.nights} ${it.nights>1?'Nächte':'Nacht'} · CI ${it.ci} / CO ${it.co}${it.breakfast?' · mit Frühstück':''}`;
+  if(it.type==='free')return it.exLink?'Fahrer + Seilbahn, zurück bis 15:30':'Tag vor Ort – frei planbar';
+  if(it.type==='box')return it.when||'';
+  const t=it.dep?`<span class="mono">${it.way||it.type==='car'?'los '+it.dep:it.dep+(it.arr?' → '+it.arr:'')}</span>`:'';
+  return [t,it.dur].filter(Boolean).join(' · ');
+}
+
+function render(){
+  // Countdown
+  const now=new Date();const start=new Date('2026-11-13T18:40:00');const end=new Date('2026-11-27T23:59:00');
+  const days=Math.ceil((start-now)/864e5);
+  document.getElementById('countdown').textContent=now<start?(days<=1?'Morgen geht’s los':`Noch ${days} Tage`):now<=end?`Tag ${Math.floor((now-new Date('2026-11-13T00:00:00'))/864e5)+1} von 15`:'Reise beendet';
+
+  // Route
+  document.getElementById('route').innerHTML=STOPS.map((s,i)=>`<div class="stop">${i?'<span class="arrow">›</span>':''}<button data-jump="${s[1]}"><b>${s[0]}</b><small>${s[2]} ${s[2]>1?'Nächte':'Nacht'}</small></button></div>`).join('');
+
+  // Stats
+  const cnt={ok:0,warn:0,todo:0};D.forEach(it=>{const s=effStatus(it);if(s)cnt[s]++});
+  const total=D.reduce((a,it)=>a+(it.price||0),0);
+  document.getElementById('total').textContent=de.format(total);
+  document.getElementById('stats').innerHTML=
+    `<div class="stat budget"><span>Gebucht / reserviert</span><strong>${de.format(total)}</strong></div>`+
+    ['ok','warn','todo'].map(s=>`<button class="stat s-${s} ${filter===s?'on':''}" data-filter="${s}"><span>${STATUS[s]}</span><strong>${cnt[s]}</strong></button>`).join('');
+  const fi=document.getElementById('filterinfo');
+  fi.hidden=!filter;fi.innerHTML=filter?`Zeigt nur: ${STATUS[filter]} <button data-filter="${filter}">Alle zeigen</button>`:'';
+
+  // Days
+  const today=cnNow().date;
+  document.getElementById('days').innerHTML=dates().map(iso=>{
+    let items=D.filter(x=>x.date===iso);
+    if(filter)items=items.filter(x=>effStatus(x)===filter);
+    if(filter&&!items.length)return '';
+    const f=fmtDay(iso);const all=D.filter(x=>x.date===iso);let places=[...new Set(all.filter(x=>x.type==='free'||x.type==='hotel').map(x=>x.place))];if(!places.length)places=[all.find(x=>x.type==='flight'||x.type==='train')?.title||''];
+    const n=nightIn(iso);
+    return `<section class="day ${iso===today?'today':''}" id="d-${iso}">
+      <div class="date"><div class="wd">${f.wd}</div><div class="dn">${f.dn}</div><div class="mo">${f.mo}</div></div>
+      <div class="dbody">
+        <div class="dhead"><h2>${places.slice(0,2).join(' · ')}</h2>${n?`<span class="night">Nacht: ${n}</span>`:''}</div>
+        ${items.map(it=>{const s=effStatus(it);return `<button class="item ${it.type==='free'?'act':''}" data-id="${it.id}">
+          <span class="ic">${ICON[it.type]}</span>
+          <span class="it-main"><span class="it-title">${it.title}</span><span class="it-meta">${meta(it)}</span>${it.flag?'<span class="flag">Datum prüfen</span>':''}</span>
+          <span class="it-side">${s?`<span class="pill ${s}">${s!=='ok'&&it.label?it.label:STATUS[s]}</span>`:''}${it.price?`<span class="price">${de.format(it.price)}</span>`:it.priceNote?`<span class="price">${it.priceNote}</span>`:''}</span>
+        </button>`}).join('')}
+      </div></section>`}).join('');
+
+  // Prep
+  document.getElementById('prep').innerHTML=PREP.map(([k,t])=>`<label><input type="checkbox" id="${k}" ${prep[k]?'checked':''}><span>${t}</span></label>`).join('');
+}
+
+const sheet=document.getElementById('sheet'),scrim=document.getElementById('scrim');
+function openItem(id){
+  const it=D.find(x=>x.id===id);if(!it)return;const s=effStatus(it);const f=fmtDay(it.date);
+  let rows=[];
+  if(it.type==='hotel'){const fe=fmtDay(it.end);rows.push(['Zeitraum',`${f.dn}.–${fe.dn}. Nov · ${it.nights} ${it.nights>1?'Nächte':'Nacht'}`],['Check-in',it.ci],['Check-out',it.co+' am '+fe.long])}
+  if(it.room)rows.push(['Zimmer',it.room]);
+  if(it.type==='hotel')rows.push(['Frühstück',it.breakfast?'<span class="pill ok">inklusive</span>':'nicht inklusive']);
+  if(it.airline)rows.push(['Flug',it.airline]);
+  if(it.trainNo)rows.push(['Zug',`<span class="mono">${it.trainNo}</span>`]);
+  if(it.seat)rows.push(['Klasse',it.seat]);
+  if(it.dur&&it.type!=='hotel')rows.push(['Dauer',it.dur]);
+  if(it.platform)rows.push(['Gebucht über',it.platform]);
+  if(it.bookingNo)rows.push(['Buchungsnr.',`<span class="mono">${it.bookingNo}</span>`]);
+  if(it.airlineCode)rows.push(['Airline-Code',`<span class="mono">${it.airlineCode}</span>`]);
+  if(it.checkinNo)rows.push(['Check-in-Nr.',`<span class="mono">${it.checkinNo}</span>`]);
+  if(it.ticketNo)rows.push(['Ticketnr.',`<span class="mono">${it.ticketNo}</span>`]);
+  if(it.phone)rows.push(['Telefon',`<span class="mono">${it.phone}</span>`]);
+  if(it.price)rows.push(['Preis',de.format(it.price)+(it.priceSplit?`<div class="note">${it.priceSplit}</div>`:'')]);else if(it.priceNote)rows.push(['Preis',it.priceNote]);
+  if(s)rows.push(['Status',`<span class="pill ${s}">${STATUS[s]}</span>`]);
+  if(it.shot)rows.push(['Screenshot','vorhanden']);
+  const tl=(it.dep||it.from)&&it.type!=='hotel'?`<div class="timeline">
+      <div><div class="t">${it.dep||'–'}</div><div class="p">${it.from}</div></div>
+      <div class="mid">${it.dur||''}</div>
+      <div class="r"><div class="t">${it.arr||'–'}</div><div class="p">${it.to}${it.arrNote?' · '+it.arrNote:''}</div></div></div>`:'';
+  sheet.innerHTML=`<div class="grab"></div>
+    <div class="sh-top"><span class="sh-type">${TYPE[it.type]}</span><button class="close" data-close aria-label="Schließen">×</button></div>
+    <h3 id="sh-title">${it.title}</h3>${it.hotelZh?`<div class="note" style="font-size:14px">${it.hotelZh}</div>`:''}
+    <div class="sh-date">${f.long}${it.place&&it.type!=='hotel'?' · '+it.place:''}</div>
+    ${tl}
+    ${rows.length?`<dl>${rows.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join('')}</dl>`:''}
+    ${it.flag?`<div class="callout warn"><b>Datum prüfen</b>${it.flag}</div>`:''}
+    ${it.alt?`<div class="callout warn"><b>Zwei Züge, zwei Klassen?</b>${it.alt}</div>`:''}
+    ${it.todo&&it.status!=='ok'?`<div class="callout ${it.status==='todo'?'todo':'warn'}"><b>${it.status==='todo'?'Noch offen':'Reserviert'}</b>${it.todo}</div>
+      <label class="done"><input type="checkbox" id="done-${it.id}" data-done="${it.id}" ${done[it.id]?'checked':''}><span>Erledigt – als gebucht markieren</span></label>`:''}
+    ${it.addr?`<div class="sh-sec"><h4>Adresse</h4><div class="addr">${it.zh?`<div class="zh" id="zh-${it.id}">${it.zh}</div>`:''}<div>${it.addr}</div>${it.zh?`<button class="copy" data-copy="${it.id}">Chinesische Adresse kopieren</button>`:''}</div></div>`:''}
+    ${it.cancel?`<div class="sh-sec"><h4>Stornierung</h4><p class="p">${it.cancel}</p></div>`:''}
+    ${it.baggage?`<div class="sh-sec"><h4>Gepäck</h4><p class="p">${it.baggage}</p></div>`:''}
+    ${it.acts?`<div class="sh-sec"><h4>Programm</h4><ul>${it.acts.map(a=>`<li>${a}</li>`).join('')}</ul></div>`:''}
+    ${it.notes?`<div class="sh-sec"><h4>Hinweise</h4><ul>${it.notes.map(a=>`<li>${a}</li>`).join('')}</ul></div>`:''}
+    ${it.tips?`<div class="sh-sec"><h4>Tipps</h4><ul>${it.tips.map(a=>`<li>${a}</li>`).join('')}</ul></div>`:''}
+    ${it.missing?`<p class="note" style="margin-top:14px">${it.missing}</p>`:''}
+    ${mapBtns(it)}`;
+  sheet.classList.add('open');scrim.classList.add('open');sheet.setAttribute('aria-hidden','false');
+  sheet.scrollTop=0;sheet.querySelector('.close').focus();
+}
+function closeSheet(){sheet.classList.remove('open');scrim.classList.remove('open');sheet.setAttribute('aria-hidden','true')}
+
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-copy]');
+  if(c){const el=document.getElementById('zh-'+c.dataset.copy);const txt=el.textContent;
+    const ok=()=>{c.textContent='Kopiert'};const fb=()=>{const r=document.createRange();r.selectNodeContents(el);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);c.textContent='Markiert – jetzt kopieren'};
+    try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(err){fb()}return}
+  const t=e.target.closest('[data-id],[data-filter],[data-jump],[data-close]');if(!t)return;
+  if(t.dataset.id){const it0=D.find(x=>x.id===t.dataset.id);if(it0&&it0.exLink)openEx(it0.exLink);else openItem(t.dataset.id)}
+  else if(t.dataset.filter){filter=filter===t.dataset.filter?null:t.dataset.filter;render()}
+  else if(t.dataset.jump){if(filter){filter=null;render()}document.getElementById('d-'+t.dataset.jump)?.scrollIntoView({behavior:'smooth',block:'start'})}
+  else if(t.hasAttribute('data-close'))closeSheet();
+});
+scrim.addEventListener('click',closeSheet);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+document.addEventListener('change',e=>{
+  const id=e.target.dataset.done;
+  if(id){done[id]=e.target.checked;store.set('cr-done',done);render();openItem(id);return}
+  if(e.target.closest('#prep')){prep[e.target.id]=e.target.checked;store.set('cr-prep',prep)}
+});
+
+/* ===== Zeit ===== */
+function tzParts(tz){const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));return{date:`${p.year}-${p.month}-${p.day}`,time:`${p.hour}:${p.minute}`}}
+const cnNow=()=>tzParts('Asia/Shanghai');
+function renderClocks(){const de_=tzParts('Europe/Berlin'),cn=cnNow();
+  document.getElementById('clocks').innerHTML=`<div class="clock"><span>Deutschland</span><b>${de_.time}</b></div><div class="clock"><span>China</span><b>${cn.time}</b></div><div class="clock"><span>China ist</span><b>+7 h</b></div>`}
+// Zeitpunkt eines Eintrags (absolute ms). China = UTC+8, Deutschland im Nov = UTC+1
+function firstTime(it){const src=it.dep||(it.type==='hotel'?it.ci:null)||(it.type==='free'?'09:00':null);const m=src&&src.match(/(\d{1,2}):(\d{2})/);return m?[+m[1],+m[2]]:[9,0]}
+function evMs(it){const [y,mo,d]=it.date.split('-').map(Number);const [h,mi]=firstTime(it);return Date.UTC(y,mo-1,d,h,mi)-(it.tz?1:8)*36e5}
+function inTxt(ms){const m=Math.round(ms/6e4);if(m<60)return `in ${m} min`;const h=Math.floor(m/60);if(h<48)return `in ${h} h ${m%60} min`;return `in ${Math.round(h/24)} Tagen`}
+function renderToday(){
+  const el=document.getElementById('today');const now=Date.now();const cn=cnNow();
+  const ev=D.filter(x=>x.type!=='box'&&x.type!=='free').map(x=>({it:x,ms:evMs(x)})).sort((a,b)=>a.ms-b.ms);
+  const next=ev.find(e=>e.ms>now);
+  const tripStart=evMs(D[0]),tripEnd=Date.UTC(2026,10,27,16,35)-36e5;
+  if(now>tripEnd){el.hidden=true;return}
+  const during=now>=tripStart-6*36e5;
+  const todays=D.filter(x=>x.date===cn.date);
+  let h=`<div class="eyebrow">${during?'Heute · '+fmtDay(cn.date).long:'Als Nächstes'}</div>`;
+  if(next){const it=next.it;h+=`<button class="next" data-id="${it.id}"><span><b>${it.title}</b><small>${fmtDay(it.date).long} · ${it.dep||(it.type==='hotel'?'Check-in '+it.ci:'')}${it.from&&it.type!=='hotel'?' · ab '+it.from:''}</small></span><span class="in">${inTxt(next.ms-now)}</span></button>`}
+  if(during&&todays.length)h+=`<div class="list">${todays.map(x=>`<span>· ${x.title}</span>`).join('')}</div>`;
+  el.innerHTML=h;el.hidden=false;
+}
+
+/* ===== Karten & Taxi ===== */
+function zhOf(it){return it.zh||it.placeZh||null}
+function mapBtns(it){
+  const zh=it.type==='hotel'||it.type==='free'||it.type==='box'?(it.zh?(it.hotelZh?it.hotelZh+' ':'')+(it.zh.includes('·')?'':it.zh):(it.placeZh||'')):(it.fromZh||'');
+  const qzh=it.goZh?it.goZh:(it.type==='hotel'&&it.hotelZh?it.hotelZh:(zh||''));
+  const qen=it.type==='hotel'?it.title+' '+(it.place||''):it.type==='free'?it.place:(it.from||'');
+  const q=encodeURIComponent((qzh||qen)+(qzh?'':' China'));
+  if(!qzh&&!qen)return '';
+  const taxi=it.goZh||(it.type==='hotel'&&(it.zh||it.hotelZh))||it.fromZh||it.placeZh||(it.type==='box'&&it.zh);
+  return `<div class="mapbtns">${taxi?`<button class="primary" data-taxi="${it.id}">Taxi-Karte zeigen</button>`:''}<a href="https://maps.apple.com/?q=${q}" target="_blank" rel="noopener">Apple Karten</a><a href="https://uri.amap.com/search?keyword=${encodeURIComponent(qzh||qen)}" target="_blank" rel="noopener">Amap</a></div><p class="note" style="margin-top:6px">Google Maps funktioniert in China ohne VPN nicht.</p>`;
+}
+const big=document.getElementById('big');let lastFocus=null;
+function showBig(html){lastFocus=document.activeElement;big.innerHTML=`<button class="x" data-bigclose aria-label="Schließen">×</button>`+html;big.hidden=false;big.querySelector('.x').focus();try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>{wl=l},()=>{})}catch(e){}}
+let wl=null;
+function closeBig(){try{wl&&wl.release()}catch(e){}wl=null;big.hidden=true;lastFocus&&lastFocus.focus&&lastFocus.focus()}
+function showTaxi(id){const it=D.find(x=>x.id===id);if(!it)return;
+  let name,addr,de_;
+  if(it.goZh){name=it.goZh;addr=it.goAddr||'';de_='Ziel: '+it.to}
+  else if(it.type==='hotel'||it.type==='box'){name=it.hotelZh||'';addr=it.zh&&!it.zh.includes('·')?it.zh:(it.zh||'');de_=it.title+(it.addr?' · '+it.addr:'')}
+  else if(it.fromZh){name=it.fromZh;addr='';de_=it.from}
+  else {name=it.placeZh;addr='';de_=it.place}
+  showBig(`<div class="hint">请带我去这里 · 谢谢</div>${name?`<div class="zh">${name}</div>`:''}${addr?`<div class="zh sm">${addr}</div>`:''}${it.phone?`<div class="de">电话 ${it.phone}</div>`:''}<div class="de">${de_}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>`)}
+function renderTaxiList(){
+  const hs=D.filter(x=>x.type==='hotel'&&(x.zh||x.hotelZh));
+  const tr=D.filter(x=>x.fromZh);
+  const row=(it,t,z,s)=>`<button class="rowbtn" data-taxi="${it.id}"><span><span class="t">${t}</span><br><span class="z">${z}</span><br><span class="s">${s}</span></span><span class="chev">›</span></button>`;
+  document.getElementById('taxiList').innerHTML=`<h3>Taxi-Karten</h3><p class="note" style="margin:-4px 0 0">Antippen und dem Fahrer zeigen.</p>`+
+   hs.map(it=>row(it,it.title,it.hotelZh||it.zh,`${fmtDay(it.date).dn}.–${fmtDay(it.end).dn}. Nov · ${it.place}`)).join('')+
+   tr.map(it=>row(it,it.from,it.fromZh,`${fmtDay(it.date).long} · ${it.title}`)).join('');
+}
+
+/* ===== Sätze ===== */
+const PH=[
+ ['Basics','Hallo','你好','nǐ hǎo'],
+ ['Basics','Danke','谢谢','xièxie'],
+ ['Basics','Entschuldigung','不好意思','bù hǎo yìsi'],
+ ['Basics','Ich spreche kein Chinesisch.','我不会说中文。','wǒ bú huì shuō zhōngwén'],
+ ['Basics','Sprechen Sie Englisch?','你会说英语吗？','nǐ huì shuō yīngyǔ ma?'],
+ ['Unterwegs','Bitte bringen Sie mich zu dieser Adresse.','请带我去这个地址。','qǐng dài wǒ qù zhège dìzhǐ'],
+ ['Unterwegs','Bitte hier anhalten.','请在这里停车。','qǐng zài zhèlǐ tíngchē'],
+ ['Unterwegs','Zum Bahnhof, bitte.','请去火车站。','qǐng qù huǒchēzhàn'],
+ ['Unterwegs','Zum Flughafen, bitte.','请去机场。','qǐng qù jīchǎng'],
+ ['Unterwegs','Wo ist die U-Bahn-Station?','地铁站在哪里？','dìtiězhàn zài nǎlǐ?'],
+ ['Unterwegs','Wo ist die Toilette?','洗手间在哪里？','xǐshǒujiān zài nǎlǐ?'],
+ ['Unterwegs','An welchem Gate steigt man in diesen Zug ein?','这趟车在哪个检票口？','zhè tàng chē zài nǎge jiǎnpiàokǒu?'],
+ ['Essen','Die Speisekarte, bitte.','请给我菜单。','qǐng gěi wǒ càidān'],
+ ['Essen','Das hier, bitte.','我要这个。','wǒ yào zhège'],
+ ['Essen','Bitte nicht scharf.','不要辣。','bú yào là'],
+ ['Essen','Nur ein bisschen scharf.','微辣。','wēi là'],
+ ['Essen','Ich esse kein Fleisch.','我不吃肉。','wǒ bù chī ròu'],
+ ['Essen','Eine Flasche Wasser, bitte.','请给我一瓶水。','qǐng gěi wǒ yì píng shuǐ'],
+ ['Essen','Sehr lecker!','很好吃！','hěn hǎochī!'],
+ ['Essen','Die Rechnung, bitte.','买单。','mǎidān'],
+ ['Bezahlen','Wie viel kostet das?','这个多少钱？','zhège duōshao qián?'],
+ ['Bezahlen','Das ist zu teuer. Geht es günstiger?','太贵了，能便宜一点吗？','tài guì le, néng piányi yìdiǎn ma?'],
+ ['Bezahlen','Kann ich mit Alipay bezahlen?','可以用支付宝吗？','kěyǐ yòng zhīfùbǎo ma?'],
+ ['Bezahlen','Kann ich mit Karte bezahlen?','可以刷卡吗？','kěyǐ shuā kǎ ma?'],
+ ['Hotel','Ich habe eine Reservierung.','我有预订。','wǒ yǒu yùdìng'],
+ ['Hotel','Ich komme spät an, nach 22 Uhr.','我会晚到，大概晚上十点以后。','wǒ huì wǎn dào, dàgài wǎnshang shí diǎn yǐhòu'],
+ ['Hotel','Kann ich mein Gepäck hier lassen?','可以寄存行李吗？','kěyǐ jìcún xíngli ma?'],
+ ['Hotel','Wie lautet das WLAN-Passwort?','WiFi密码是多少？','WiFi mìmǎ shì duōshao?'],
+ ['Hotel','In diesem Paket sind Akkus. Kann ich es verschicken?','这个包裹里有电池，可以寄吗？','zhège bāoguǒ lǐ yǒu diànchí, kěyǐ jì ma?'],
+ ['Notfall','Hilfe!','救命！','jiùmìng!'],
+ ['Notfall','Ich brauche einen Arzt.','我需要看医生。','wǒ xūyào kàn yīshēng'],
+ ['Notfall','Bitte rufen Sie die Polizei.','请帮我报警。','qǐng bāng wǒ bàojǐng'],
+ ['Notfall','Ich habe mich verlaufen.','我迷路了。','wǒ mílù le'],
+ ['Notfall','Ich habe meinen Reisepass verloren.','我的护照丢了。','wǒ de hùzhào diū le'],
+];
+let phCat='Alle';
+function renderPhrases(){
+  const cats=['Alle',...new Set(PH.map(p=>p[0]))];
+  document.getElementById('phCats').innerHTML=cats.map(c=>`<button class="chip" data-phcat="${c}" aria-pressed="${c===phCat}">${c}</button>`).join('');
+  document.getElementById('phList').innerHTML=PH.map((p,i)=>[p,i]).filter(([p])=>phCat==='Alle'||p[0]===phCat).map(([p,i])=>`<button class="phrase" data-ph="${i}"><span class="d">${p[1]}</span><span class="z">${p[2]}</span><span class="p">${p[3]}</span><span class="chev">›</span></button>`).join('');
+}
+function showPhrase(i){const p=PH[i];showBig(`<div class="zh">${p[2]}</div><div class="py">${p[3]}</div><div class="de">${p[1]}</div>`)}
+
+/* ===== Ausgaben ===== */
+const CATS=['Essen','Transport','Eintritt','Einkauf','Unterkunft','Sonstiges'];
+let exps=store.get('cr-exp')||[];let rate=store.get('cr-rate')||7.48;let cur='CNY';let delArm=null;
+const cny=new Intl.NumberFormat('de-DE',{style:'currency',currency:'CNY',currencyDisplay:'narrowSymbol'});
+const toCNY=e=>e.cur==='CNY'?e.amt:e.amt*rate;const toEUR=e=>e.cur==='EUR'?e.amt:e.amt/rate;
+function defaultDate(){const d=cnNow().date;return d<'2026-11-13'||d>'2026-11-27'?'2026-11-13':d}
+function initExp(){
+  document.getElementById('eCat').innerHTML=CATS.map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('eDate').value=defaultDate();
+  document.getElementById('eRate').value=String(rate).replace('.',',');
+}
+function renderExp(){
+  const tC=exps.reduce((a,e)=>a+toCNY(e),0),tE=exps.reduce((a,e)=>a+toEUR(e),0);
+  const booked=D.reduce((a,it)=>a+(it.price||0),0);
+  const days=new Set(exps.map(e=>e.date)).size;
+  document.getElementById('expSum').innerHTML=`<div><span>Vor Ort ausgegeben</span><strong>${cny.format(tC)}</strong></div><div><span>in Euro</span><strong>${de.format(tE)}</strong></div><div><span>Ø pro Tag</span><strong>${de.format(days?tE/days:0)}</strong></div><div><span>Mit Buchungen gesamt</span><strong>${de.format(booked+tE)}</strong></div>`;
+  const by=CATS.map(c=>[c,exps.filter(e=>e.cat===c).reduce((a,e)=>a+toEUR(e),0)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+  const mx=Math.max(1,...by.map(x=>x[1]));
+  document.getElementById('expCats').innerHTML=`<h3>Nach Kategorie</h3>`+(by.length?`<div class="bars">${by.map(([c,v])=>`<div class="bar"><span>${c}</span><span class="tr"><i style="width:${(v/mx*100).toFixed(1)}%"></i></span><span class="v">${de.format(v)}</span></div>`).join('')}</div>`:`<div class="empty">Noch keine Ausgaben. Trag oben deine erste ein, z. B. das Taxi vom Flughafen.</div>`);
+  const groups={};exps.forEach((e,i)=>{(groups[e.date]=groups[e.date]||[]).push([e,i])});
+  const keys=Object.keys(groups).sort().reverse();
+  document.getElementById('expList').innerHTML=`<h3>Alle Ausgaben</h3>`+(keys.length?keys.map(k=>{const g=groups[k];const sum=g.reduce((a,[e])=>a+toEUR(e),0);
+    return `<div class="eday"><h4><span>${fmtDay(k).long}</span><span>${de.format(sum)}</span></h4>${g.slice().reverse().map(([e,i])=>`<div class="erow"><span><span class="c">${e.cat}</span>${e.note?`<br><span class="n">${e.note}</span>`:''}</span><span class="a">${e.cur==='CNY'?cny.format(e.amt):de.format(e.amt)}<small>${e.cur==='CNY'?de.format(toEUR(e)):cny.format(toCNY(e))}</small></span><button class="del ${delArm===e.id?'confirm':''}" data-del="${e.id}" aria-label="Löschen">${delArm===e.id?'Löschen?':'×'}</button></div>`).join('')}</div>`}).join(''):`<div class="empty">Hier erscheinen deine Ausgaben, nach Tagen sortiert.</div>`);
+}
+document.getElementById('expForm').addEventListener('submit',e=>{e.preventDefault();
+  const raw=document.getElementById('eAmt').value.trim().replace(/\s/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.');
+  const amt=parseFloat(raw);const err=document.getElementById('eErr');
+  if(!(amt>0)){err.textContent='Bitte einen Betrag größer als 0 eingeben, z. B. 45 oder 12,50.';err.hidden=false;document.getElementById('eAmt').focus();return}
+  err.hidden=true;
+  exps.push({id:Date.now().toString(36),amt:Math.round(amt*100)/100,cur,cat:document.getElementById('eCat').value,date:document.getElementById('eDate').value||defaultDate(),note:document.getElementById('eNote').value.trim()});
+  store.set('cr-exp',exps);document.getElementById('eAmt').value='';document.getElementById('eNote').value='';renderExp();
+});
+document.getElementById('eRate').addEventListener('change',e=>{const v=parseFloat(e.target.value.replace(',','.'));if(v>0){rate=v;store.set('cr-rate',rate);renderExp()}else e.target.value=String(rate).replace('.',',')});
+
+/* ===== Ausflüge ===== */
+// k: Abend | Halbtag | Tagesausflug | 1–2 h ; near: nah am Hotel
+const CITY=[
+ ['Shanghai','14.–16.11. · 1,5 Tage','Dein Hotel liegt am Nordende des Bund – vieles ist zu Fuß erreichbar.'],
+ ['Yangshuo','16.–19.11. · 2,5 Tage','Dein Hotel liegt in Baisha am Yulong River, ca. 20 Min. vom Ortskern.'],
+ ['Zhangjiajie','19.–22.11. · 2 Tage','Dein Homestay liegt in der Stadt, 3 Min. zur Tianmen-Seilbahn. Der Forest Park ist ca. 1 h entfernt.'],
+ ['Chongqing','22.–25.11. · 2,5 Tage','Dein Hotel liegt in Guanyinqiao. Die meisten Sehenswürdigkeiten sind in Yuzhong, ca. 20–30 Min. mit Taxi oder Metro.'],
+ ['Beijing','25.–26.11. · 1 Tag','Nur der 26.11. tagsüber – geplant ist die Mauer, Zug um 18:00.'],
+];
+const EX=[
+ {id:'sh1',city:'Shanghai',name:'The Bund bei Nacht',zh:'外滩',k:'Abend',near:1,d:'Uferpromenade mit Kolonialbauten, gegenüber die beleuchtete Skyline von Pudong.',tips:['Nach Sonnenuntergang hingehen – die Lichter gehen meist bis ca. 22 Uhr an.','Von deinem Hotel zu Fuß erreichbar.']},
+ {id:'sh2',city:'Shanghai',name:'Nanjing Road',zh:'南京路步行街',k:'1–2 h',near:1,d:'Lange Einkaufsstraße und Fußgängerzone, die direkt zum Bund führt.',tips:['Gut mit dem Bund am ersten Abend zu verbinden.']},
+ {id:'sh3',city:'Shanghai',name:'Yu Garden & Altstadt',zh:'豫园',k:'Halbtag',d:'Klassischer Garten aus der Ming-Zeit mit Basar und Teehaus drumherum.',tips:['Früh am Morgen hingehen, ab Mittag wird es sehr voll.','Xiaolongbao (Suppenteigtaschen) in der Umgebung probieren.']},
+ {id:'sh4',city:'Shanghai',name:'French Concession & Wukang Road',zh:'武康路',k:'Halbtag',d:'Platanenalleen, Villen und Cafés – Shanghais ruhigere Seite zum Schlendern.',tips:['Wukang Mansion ist ein beliebtes Fotomotiv.']},
+ {id:'sh5',city:'Shanghai',name:'Shanghai Tower',zh:'上海中心大厦',k:'1–2 h',d:'Höchstes Gebäude Chinas mit Aussichtsplattform weit oben über Lujiazui.',tips:['Zum Sonnenuntergang gehen: Tag- und Nachtblick in einem.','Tickets am besten vorab über Trip.com.']},
+ {id:'sh6',city:'Shanghai',name:'Bootsfahrt auf dem Huangpu',zh:'黄浦江游船',k:'Abend',near:1,d:'Kurze Rundfahrt zwischen Bund und Pudong – die Skyline vom Wasser aus.',tips:['Abfahrten u. a. am Bund-Anleger, abends am schönsten.']},
+ {id:'sh7',city:'Shanghai',name:'Wasserstadt Zhujiajiao',zh:'朱家角古镇',k:'Halbtag',d:'Alte Kanalstadt mit Steinbrücken und Booten, ca. 1 h außerhalb.',tips:['Nur wenn du einen ganzen Tag in Shanghai einplanst.']},
+ {id:'ys1',city:'Yangshuo',name:'Bambusfloß auf dem Yulong River',zh:'遇龙河竹筏',k:'Halbtag',near:1,d:'Gemächliche Floßfahrt zwischen Karstbergen, Reisfeldern und kleinen Wehren.',tips:['Einstiege liegen nah an deinem Hotel – die Rezeption kann buchen.']},
+ {id:'ys2',city:'Yangshuo',name:'E-Bike-Tour durch die Dörfer',zh:'遇龙河骑行',k:'Halbtag',near:1,d:'Auf Feldwegen entlang des Yulong River zu Dörfern, Brücken und Aussichtspunkten.',tips:['E-Bikes gibt es fast überall zu leihen, Akkustand vorher prüfen.']},
+ {id:'ys3',city:'Yangshuo',name:'Li River & Xingping',zh:'兴坪古镇',k:'Tagesausflug',d:'Die berühmteste Flusslandschaft Chinas. Bei Xingping liegt das Motiv vom 20-Yuan-Schein.',tips:['Bootsfahrt auf dem Li River ab Xingping, danach durch die Altstadt.','20-Yuan-Schein mitnehmen fürs Foto.']},
+ {id:'ys4',city:'Yangshuo',name:'Xianggong Hill',zh:'相公山',k:'1–2 h',d:'Aussichtspunkt über einer Flussbiegung des Li River, bekannt für Sonnenaufgänge.',tips:['Sehr früh losfahren, Aufstieg über Treppen.','Gut mit Xingping zu kombinieren.']},
+ {id:'ys5',city:'Yangshuo',name:'Moon Hill',zh:'月亮山',k:'1–2 h',near:1,d:'Kalksteinberg mit großem, mondförmigem Felsbogen und Blick übers Tal.',tips:['Treppenaufstieg, ca. 30 Min.']},
+ {id:'ys6',city:'Yangshuo',name:'West Street',zh:'阳朔西街',k:'Abend',d:'Lebhafte Altstadtgasse mit Restaurants, Bars und Märkten.',tips:['Bierfisch (啤酒鱼) ist die lokale Spezialität.']},
+ {id:'ys7',city:'Yangshuo',name:'Show „Impression Liu Sanjie“',zh:'印象·刘三姐',k:'Abend',d:'Große Freiluft-Show auf dem Li River mit den beleuchteten Bergen als Kulisse.',tips:['Tickets vorab buchen, abends wird es kühl.']},
+ {id:'zj1',city:'Zhangjiajie',name:'Tianmen Mountain',zh:'天门山',k:'Tagesausflug',near:1,plan:'Seilbahn 3 Min. vom Homestay',d:'Sehr lange Seilbahn auf den Berg, Glasstege an der Felswand und das Himmelstor mit 999 Stufen.',tips:['Die Talstation ist direkt bei deiner Unterkunft.','Früh starten, Tickets vorab buchen.','Bei Nebel ist die Sicht oft weg – Wetter am Morgen prüfen.']},
+ {id:'zj2',city:'Zhangjiajie',name:'Forest Park: Yuanjiajie',zh:'袁家界',k:'Tagesausflug',d:'Die Felssäulen, die als Vorbild für die „Avatar“-Berge gelten, mit vielen Aussichtspunkten.',tips:['Anfahrt nach Wulingyuan ca. 1 h.','Hoch geht es mit dem Bailong Elevator (百龙天梯), gläserner Aufzug an der Felswand.','Parkticket gilt mehrere Tage.']},
+ {id:'zj3',city:'Zhangjiajie',name:'Forest Park: Tianzi Mountain',zh:'天子山',k:'Tagesausflug',d:'Weite Ausblicke über das Säulenmeer, per Seilbahn erreichbar.',tips:['Mit Yuanjiajie an einem langen Tag möglich, entspannter auf zwei Tage verteilt.']},
+ {id:'zj4',city:'Zhangjiajie',name:'Grand Canyon & Glasbrücke',zh:'张家界大峡谷玻璃桥',k:'Halbtag',d:'Gläserne Hängebrücke hoch über einer Schlucht, danach Wanderung durch den Canyon.',tips:['Ca. 1,5 h Anfahrt, Tickets vorab buchen.','Reisepass mitnehmen, er wird am Eingang kontrolliert.']},
+ {id:'zj5',city:'Zhangjiajie',name:'Huanglong Cave',zh:'黄龙洞',k:'1–2 h',d:'Große Tropfsteinhöhle mit Bootsfahrt auf einem unterirdischen Fluss.',tips:['Liegt in Wulingyuan – gut mit dem Forest Park zu verbinden.','Gute Option bei Regen.']},
+ {id:'zj6',city:'Zhangjiajie',name:'Furong Town',zh:'芙蓉镇',k:'Tagesausflug',d:'Altes Dorf an Klippen, durch das ein Wasserfall stürzt – abends beleuchtet.',tips:['Weiter weg, nur mit einem freien ganzen Tag sinnvoll.']},
+ {id:'cq1',city:'Chongqing',name:'Hongya Cave',zh:'洪崖洞',k:'Abend',d:'Stelzenbauten am Hang, abends goldgelb beleuchtet – das bekannteste Motiv der Stadt.',tips:['Am schönsten vom gegenüberliegenden Ufer oder von der Qiansimen-Brücke (千厮门大桥).']},
+ {id:'cq2',city:'Chongqing',name:'Jiefangbei',zh:'解放碑',k:'1–2 h',d:'Belebtes Zentrum mit Denkmal, Shopping und Streetfood – fußläufig zur Hongya Cave.',tips:['Gut mit Hongya Cave an einem Abend zu verbinden.']},
+ {id:'cq3',city:'Chongqing',name:'Liziba – Bahn durchs Haus',zh:'李子坝轻轨穿楼',k:'1–2 h',d:'Die Einschienenbahn Linie 2 fährt mitten durch ein Wohnhaus.',tips:['Der Aussichtspunkt liegt unterhalb der Station Liziba.']},
+ {id:'cq4',city:'Chongqing',name:'Yangtze-Seilbahn',zh:'长江索道',k:'1–2 h',d:'Historische Gondel quer über den Yangtze, tolle Aussicht auf die Stadt.',tips:['Abends lange Schlangen, früher am Tag kürzer.','Auf der Südseite liegt die Longmenhao-Altstraße (龙门浩老街).']},
+ {id:'cq5',city:'Chongqing',name:'Shibati',zh:'十八梯',k:'1–2 h',d:'Restaurierte Treppengasse, die die Ober- und Unterstadt verbindet.',tips:['Nah an Jiefangbei.']},
+ {id:'cq6',city:'Chongqing',name:'Ciqikou',zh:'磁器口古镇',k:'Halbtag',d:'Altstadt am Fluss mit Gassen, Snacks und Teehäusern.',tips:['Am Vormittag noch weniger voll.']},
+ {id:'cq7',city:'Chongqing',name:'Chaotianmen & Flussfahrt',zh:'朝天门',k:'Abend',d:'Wo Yangtze und Jialing zusammenfließen. Abends starten Rundfahrten auf beiden Flüssen.',tips:['Nachtfahrt „两江游“ zeigt die beleuchtete Skyline.']},
+ {id:'cq8',city:'Chongqing',name:'Hotpot essen',zh:'重庆火锅',k:'Abend',d:'Chongqings Spezialität: scharfer Sichuan-Pfeffer-Topf zum Selberkochen.',tips:['Nach „鸳鸯锅“ fragen: halb scharf, halb mild.','Satz „微辣“ (nur ein bisschen scharf) im Bereich Sätze.']},
+ {id:'cq9',city:'Chongqing',name:'Wulong Karst',zh:'武隆天生三桥',k:'Tagesausflug',d:'Drei gewaltige natürliche Felsbrücken in einer tiefen Schlucht – Unesco-Welterbe.',tips:['Ca. 2,5–3 h pro Richtung – ganzer Tag, am besten als Tour oder mit Fahrer.']},
+ {id:'bj1',city:'Beijing',name:'Chinesische Mauer Mutianyu',zh:'慕田峪长城',k:'Tagesausflug',plan:'Geplant am 26.11.',d:'Gut restaurierter Mauerabschnitt mit Seilbahn hoch und Rodelbahn zurück ins Tal.',tips:['Ca. 1,5 h pro Richtung mit Fahrer.','Früh los (ca. 8:00), spätestens 15:30 zurück – Zug 18:00 ab Beijing South.','Warm anziehen: Ende November oft um 0 °C und windig.']},
+ {id:'bj2',city:'Beijing',name:'Nanluoguxiang',zh:'南锣鼓巷',k:'1–2 h',near:1,d:'Bekannte Hutong-Gasse mit kleinen Läden und Snacks – direkt bei deinem Hotel.',tips:['Am Abend des 25.11. bist du zu spät dran, eher am Morgen des 26.11. vor der Abfahrt.']},
+ {id:'bj3',city:'Beijing',name:'Houhai',zh:'后海',k:'1–2 h',near:1,d:'See im Hutong-Viertel mit Bars und Spazierwegen, ca. 15 Min. vom Hotel.',tips:['Nur wenn Zeit bleibt.']},
+ {id:'bj4',city:'Beijing',name:'Verbotene Stadt',zh:'故宫',k:'Halbtag',d:'Der ehemalige Kaiserpalast – riesig und eindrucksvoll.',tips:['Passt zeitlich kaum neben die Mauer. Nur als Alternative.','Tickets nur online mit Reisepass und Tage vorher, montags geschlossen.']},
+];
+let fav=store.get('cr-fav')||{};let exCity='Shanghai';
+function renderEx(){
+  const favN=EX.filter(e=>fav[e.id]).length;
+  document.getElementById('exCats').innerHTML=[...CITY.map(c=>c[0]),'Gemerkt'].map(c=>`<button class="chip" data-excity="${c}" aria-pressed="${c===exCity}">${c==='Gemerkt'?'☆ Gemerkt ('+favN+')':c}</button>`).join('');
+  const groups=exCity==='Gemerkt'?CITY.filter(c=>EX.some(e=>e.city===c[0]&&fav[e.id])):CITY.filter(c=>c[0]===exCity);
+  const row=e=>`<div class="exc"><button class="open" data-ex="${e.id}"><span class="t">${e.name}</span><span class="z">${e.zh}</span><span class="m">${e.d}</span><span class="tags"><span class="tag">${e.k}</span>${e.near?'<span class="tag near">nah am Hotel</span>':''}${e.plan?`<span class="tag plan">${e.plan}</span>`:''}</span></button><button class="star" data-star="${e.id}" aria-pressed="${!!fav[e.id]}" aria-label="Merken">${fav[e.id]?'★':'☆'}</button></div>`;
+  document.getElementById('exList').innerHTML=groups.length?groups.map(c=>`<section class="card"><h3>${c[0]} <span class="note">${c[1]}</span></h3><p class="citynote">${c[2]}</p>${EX.filter(e=>e.city===c[0]&&(exCity!=='Gemerkt'||fav[e.id])).map(row).join('')}</section>`).join(''):`<div class="card empty">Noch nichts gemerkt. Tippe bei einem Ausflug auf ☆.</div>`;
+}
+function openEx(id){const e=EX.find(x=>x.id===id);if(!e)return;
+  const q=encodeURIComponent(e.zh);
+  sheet.innerHTML=`<div class="grab"></div><div class="sh-top"><span class="sh-type">Ausflug · ${e.city}</span><button class="close" data-close aria-label="Schließen">×</button></div>
+   <h3 id="sh-title">${e.name}</h3><div class="note" style="font-size:16px">${e.zh}</div>
+   <div class="tags" style="margin:8px 0 12px"><span class="tag">${e.k}</span>${e.near?'<span class="tag near">nah am Hotel</span>':''}${e.plan?`<span class="tag plan">${e.plan}</span>`:''}</div>
+   <p style="margin:0">${e.d}</p>
+   ${e.tips?`<div class="sh-sec"><h4>Tipps</h4><ul>${e.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>`:''}
+   <div class="mapbtns" style="margin-top:16px"><button class="primary" data-extaxi="${e.id}">Taxi-Karte zeigen</button><button data-star="${e.id}" aria-pressed="${!!fav[e.id]}">${fav[e.id]?'★ Gemerkt':'☆ Merken'}</button><a href="https://maps.apple.com/?q=${q}" target="_blank" rel="noopener">Apple Karten</a><a href="https://uri.amap.com/search?keyword=${q}" target="_blank" rel="noopener">Amap</a></div>`;
+  sheet.classList.add('open');scrim.classList.add('open');sheet.setAttribute('aria-hidden','false');sheet.scrollTop=0;sheet.querySelector('.close').focus();
+}
+
+/* ===== Infos ===== */
+const INFO=[
+ ['Einreise','Visumfrei, Einreisekarte, Pass',`<ul>
+  <li><b>Kein Visum nötig:</b> Deutsche dürfen bis 31.12.2026 bis zu 30 Tage visumfrei einreisen (Tourismus, Geschäft, Besuch). Deine Reise dauert 15 Tage.</li>
+  <li><b>Reisepass:</b> sollte bei Einreise noch mindestens 6 Monate gültig sein und freie Seiten haben.</li>
+  <li><b>Einreisekarte:</b> seit Nov. 2025 online vorab ausfüllen – über die App „NIA 12367“, die Website der Einwanderungsbehörde oder ein Mini-Programm in WeChat/Alipay. Papierkarten gibt es weiterhin am Flughafen.</li>
+  <li><b>Passkontrolle:</b> Fingerabdrücke werden genommen. Halte Hoteladresse (1. Nacht: Bund-Hotel) und Rückflug CA935 bereit – danach wird oft gefragt.</li>
+ </ul>`],
+ ['Bezahlen','Alipay, WeChat Pay, Bargeld',`<ul>
+  <li><b>Alipay</b> und <b>WeChat Pay</b> sind überall Standard – auch an Straßenständen. Beide Apps vor Abflug installieren, mit Pass verifizieren und deine Visa/Mastercard verknüpfen.</li>
+  <li>Bei Alipay vorab einmal eine kleine Zahlung testen, falls die Kartenfreigabe hängt.</li>
+  <li><b>Bargeld</b> als Reserve (z. B. 500–1.000 ¥) – am Flughafen Pudong am Geldautomaten abheben. Kleine Läden und Taxis nehmen es meist noch.</li>
+  <li>Kreditkarten gehen in großen Hotels und manchen Restaurants, sonst selten.</li>
+  <li><b>Trinkgeld</b> ist in China unüblich.</li>
+ </ul>`],
+ ['Internet','Gesperrte Apps, eSIM, VPN',`<ul>
+  <li><b>Ohne Umweg gesperrt:</b> Google (Suche, Maps, Gmail, Übersetzer), WhatsApp, Instagram, Facebook, YouTube, X.</li>
+  <li><b>Einfachste Lösung:</b> eine internationale eSIM oder Roaming deiner deutschen Karte – die Daten laufen über das Ausland, damit funktionieren die gesperrten Dienste meist.</li>
+  <li>Hotel-WLAN ist chinesisches Internet – dort brauchst du ein VPN. Ein VPN vor der Abreise installieren, im Land lässt es sich kaum laden.</li>
+  <li><b>Funktioniert ohne Umweg:</b> WeChat, Alipay, Apple Karten, Amap, Bing, iMessage/FaceTime meist.</li>
+ </ul>`],
+ ['Wichtige Apps','Vor Abflug installieren',`<ul>
+  <li><b>Alipay</b> – Bezahlen, darin auch DiDi-Taxi und Übersetzer.</li>
+  <li><b>WeChat</b> – Bezahlen und Messenger, viele Hotels kommunizieren darüber.</li>
+  <li><b>Amap</b> (高德地图) – beste Karte in China, auch mit englischer Oberfläche. Alternativ Apple Karten.</li>
+  <li><b>DiDi</b> – Taxi/Fahrdienst, englische App oder in Alipay.</li>
+  <li><b>Trip.com</b> – deine Zug- und Flugbuchungen.</li>
+  <li><b>Übersetzer:</b> Apple Übersetzen mit geladenem Offline-Paket Chinesisch; zusätzlich eine App mit Kamera-Übersetzung für Speisekarten.</li>
+  <li><b>NIA 12367</b> – für die Online-Einreisekarte.</li>
+ </ul>`],
+ ['Zugfahren','Pass, Sicherheitscheck, Gates',`<ul>
+  <li><b>Dein Pass ist das Ticket</b> – immer dabeihaben, er wird am Eingang und am Gate gescannt.</li>
+  <li>Mindestens <b>45–60 Minuten</b> vor Abfahrt am Bahnhof sein: Ausweiskontrolle und Sicherheitscheck wie am Flughafen.</li>
+  <li>Auf der Anzeige dein Gate (检票口) suchen. Es öffnet ca. 15–20 Min. vorher und schließt einige Minuten vor Abfahrt – danach kommt man nicht mehr rein.</li>
+  <li>Wagen- und Sitznummer stehen in der Trip.com-Buchung. Am Bahnsteig zeigen Markierungen, wo welcher Wagen hält.</li>
+  <li>Große Koffer passen in die Ablagen am Wagenende.</li>
+ </ul>`],
+ ['Wetter im November','Was dich an jeder Station erwartet',`<table class="wx"><thead><tr><th>Station</th><th>Tag / Nacht</th><th>Hinweis</th></tr></thead><tbody>
+  <tr><td>Shanghai</td><td class="n">ca. 17° / 10°</td><td>mild, oft feucht</td></tr>
+  <tr><td>Yangshuo</td><td class="n">ca. 20° / 12°</td><td>angenehm, wenig Regen</td></tr>
+  <tr><td>Zhangjiajie</td><td class="n">ca. 15° / 8°</td><td>in den Bergen kälter, oft Nebel</td></tr>
+  <tr><td>Chongqing</td><td class="n">ca. 16° / 11°</td><td>bewölkt, diesig</td></tr>
+  <tr><td>Beijing</td><td class="n">ca. 7° / −3°</td><td>trocken, kalt, windig</td></tr>
+ </tbody></table>
+ <p><b>Packen:</b> Zwiebel-Look, eine warme Jacke, Mütze und Handschuhe für Beijing, Regenjacke und gute Schuhe für Zhangjiajie.</p>
+ <p class="note">Langjährige Durchschnittswerte, kein Wetterbericht.</p>`],
+ ['Strom & Alltag','Steckdose, Wasser, Toiletten',`<ul>
+  <li><b>Strom:</b> 220 V. Steckdosen Typ A und I, oft auch für flache Euro-Stecker (Typ C) geeignet. Schuko-Stecker (Föhn, dicke Ladegeräte) passen nicht – einen Reiseadapter mitnehmen.</li>
+  <li><b>Leitungswasser</b> nicht trinken. Flaschenwasser ist billig, Hotels stellen meist welches hin.</li>
+  <li><b>Toiletten:</b> oft Hocktoiletten und kein Papier – Taschentücher immer dabeihaben.</li>
+  <li><b>Heizung:</b> Im Süden (Yangshuo, Zhangjiajie, Chongqing) gibt es meist keine Zentralheizung, nur die Klimaanlage im Heizmodus. Beijing heizt ab Mitte November.</li>
+  <li><b>Zeit:</b> ganz China hat eine Zeitzone, im November 7 Stunden vor Deutschland.</li>
+ </ul>`],
+ ['Kultur & Etikette','Ein paar Do’s und Don’ts',`<ul>
+  <li>Stäbchen nie senkrecht in den Reis stecken – erinnert an Totenrituale.</li>
+  <li>Visitenkarten, Geschenke und Geld mit beiden Händen geben und nehmen.</li>
+  <li>Über Politik, Taiwan, Tibet oder Hongkong besser nicht diskutieren.</li>
+  <li>Menschen vor dem Fotografieren fragen, besonders Ältere und Kinder.</li>
+  <li>Ruhig bleiben, auch wenn etwas schiefgeht – laut werden führt zu Gesichtsverlust und hilft selten.</li>
+  <li>Gedränge an Kassen und Bahnhöfen ist normal, nicht persönlich nehmen.</li>
+  <li>Beim Essen wird geteilt: Gerichte kommen in die Mitte, jeder nimmt sich.</li>
+ </ul>`],
+];
+function renderInfos(){document.getElementById('infoAcc').innerHTML=INFO.map(([t,s_,b])=>`<details><summary><b>${t}</b><small>${s_}</small><span class="chev">›</span></summary><div class="body">${b}</div></details>`).join('')}
+
+/* ===== Tabs ===== */
+const TABS=['reise','ausfluege','ausgaben','saetze','infos','hilfe'];
+function showTab(t){if(!TABS.includes(t))t='reise';TABS.forEach(x=>{document.getElementById('v-'+x).hidden=x!==t;document.getElementById('tab-'+x).setAttribute('aria-selected',x===t)});try{store.set('cr-tab',t)}catch(e){}window.scrollTo(0,0)}
+
+document.addEventListener('click',e=>{
+  const x=e.target.closest('[data-ex],[data-excity],[data-star],[data-extaxi]');
+  if(x){if(x.dataset.ex)openEx(x.dataset.ex);else if(x.dataset.excity){exCity=x.dataset.excity;renderEx()}else if(x.dataset.star){fav[x.dataset.star]=!fav[x.dataset.star];store.set('cr-fav',fav);renderEx();if(x.closest('#sheet'))openEx(x.dataset.star)}else if(x.dataset.extaxi){const q=EX.find(y=>y.id===x.dataset.extaxi);showBig(`<div class="hint">请带我去这里 · 谢谢</div><div class="zh">${q.zh}</div><div class="de">${q.name}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>`)}return}
+  const b=e.target.closest('[data-tab],[data-taxi],[data-ph],[data-phcat],[data-bigclose],[data-cur],[data-del]');if(!b)return;
+  if(b.dataset.tab){closeSheet();showTab(b.dataset.tab)}
+  else if(b.dataset.taxi)showTaxi(b.dataset.taxi);
+  else if(b.dataset.ph)showPhrase(+b.dataset.ph);
+  else if(b.dataset.phcat){phCat=b.dataset.phcat;renderPhrases()}
+  else if(b.hasAttribute('data-bigclose'))closeBig();
+  else if(b.dataset.cur){cur=b.dataset.cur;document.querySelectorAll('[data-cur]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.cur===cur))}
+  else if(b.dataset.del){const id=b.dataset.del;if(delArm===id){exps=exps.filter(x=>x.id!==id);store.set('cr-exp',exps);delArm=null}else delArm=id;renderExp()}
+},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!big.hidden)closeBig()});
+
+renderInfos();renderEx();render();renderClocks();renderToday();renderTaxiList();renderPhrases();initExp();renderExp();
+setInterval(()=>{renderClocks();renderToday()},30000);
+const h0=(location.hash||'').slice(1);showTab(TABS.includes(h0)?h0:'reise');
+(()=>{const cn=cnNow().date;const el=document.getElementById('d-'+cn);if(el&&!h0)setTimeout(()=>el.scrollIntoView({block:'start'}),50)})();
+</script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+</script>
+</body>
+</html>
