@@ -180,6 +180,7 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .routeline b{color:var(--ink);font-weight:600}
 .check label{display:flex;gap:10px;align-items:flex-start;padding:8px 0;cursor:pointer;font-size:14px}
 .check input{accent-color:var(--blue);width:20px;height:20px;flex:none}
+.pk{display:grid!important;grid-template-columns:auto 1fr auto;align-items:center}
 .check input:checked+span{color:var(--muted);text-decoration:line-through}
 
 /* Tabs */
@@ -195,7 +196,7 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;border:1px solid var(--line-2);background:transparent;border-radius:4px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)}
 .chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--panel);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);background:var(--panel);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
 .seg button{border:0;background:none;padding:12px 0;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
 .seg button+button{border-left:1px solid var(--line)}
 .seg button[aria-pressed="true"]{background:var(--panel-2);color:var(--ink)}
@@ -225,6 +226,7 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .pill.near{border-color:rgba(63,191,111,.5);color:var(--green)}
 .star{background:transparent;border:1px solid var(--line-2);border-radius:4px;width:40px;height:40px;font-size:18px;cursor:pointer;color:var(--muted)}
 .star[aria-pressed="true"]{color:#fff;background:var(--blue);border-color:var(--blue)}
+.seg2{grid-template-columns:1fr 1fr}
 .citynote{font-size:14px;color:var(--muted);margin:-4px 0 0}
 
 /* Ausgaben */
@@ -329,15 +331,28 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
  </div>
 
  <div class="view" id="v-ausfluege" hidden>
-  <h2 class="vh">Ausflüge</h2>
-  <p class="lead">Ideen für jede Station. Mit ☆ merkst du dir, was du machen willst.</p>
+  <h2 class="vh">Entdecken</h2>
+  <div class="seg seg2" role="group" aria-label="Bereich"><button data-dseg="ex" aria-pressed="true">Ausflüge</button><button data-dseg="food" aria-pressed="false">Essen</button></div>
   <div class="chips" id="exCats"></div>
-  <div id="exList" style="display:flex;flex-direction:column;gap:14px"></div>
+  <div id="d-ex" style="display:flex;flex-direction:column;gap:14px">
+    <p class="lead" style="margin:0">Mit ☆ merkst du dir, was du machen willst.</p>
+    <div id="exList" style="display:flex;flex-direction:column;gap:14px"></div>
+  </div>
+  <div id="d-food" hidden style="display:flex;flex-direction:column;gap:14px">
+    <div class="chips" id="foodCats"></div>
+    <div id="foodList" style="display:flex;flex-direction:column;gap:14px"></div>
+    <p class="note">Preis pro Person, grobe Einordnung: € bis 50 ¥ · €€ 50–150 ¥ · €€€ 150–300 ¥ · €€€€ über 300 ¥. Öffnungszeiten vor dem Besuch in Amap oder Trip.com prüfen.</p>
+  </div>
  </div>
 
  <div class="view" id="v-ausgaben" hidden>
   <h2 class="vh">Ausgaben</h2>
   <p class="lead">Was du vor Ort ausgibst, in Yuan oder Euro.</p>
+  <section class="card conv" aria-label="Umrechner">
+    <h3>Umrechner</h3>
+    <div class="two"><div class="field"><label for="cvY">Yuan ¥</label><input id="cvY" inputmode="decimal" autocomplete="off" placeholder="100"></div><div class="field"><label for="cvE">Euro €</label><input id="cvE" inputmode="decimal" autocomplete="off" placeholder="13,37"></div></div>
+    <div class="note" id="cvNote"></div>
+  </section>
   <form class="card" id="expForm" novalidate>
     <div class="exp-form">
       <div class="field amount"><label for="eAmt">Betrag</label><input id="eAmt" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
@@ -371,12 +386,19 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
   <div class="seg" role="group" aria-label="Bereich">
     <button data-seg="taxi" aria-pressed="true">Taxi-Karten</button>
     <button data-seg="saetze" aria-pressed="false">Sätze</button>
+    <button data-seg="packen" aria-pressed="false">Packen</button>
     <button data-seg="infos" aria-pressed="false">Infos</button>
   </div>
   <section id="h-taxi" class="card"></section>
   <section id="h-saetze" hidden style="display:flex;flex-direction:column;gap:12px">
     <div class="chips" id="phCats"></div>
     <div class="card" id="phList"></div>
+  </section>
+  <section id="h-packen" hidden style="display:flex;flex-direction:column;gap:12px">
+    <div class="note" id="packCount"></div>
+    <div id="packList" style="display:flex;flex-direction:column;gap:12px"></div>
+    <form class="card" id="packForm" novalidate><div class="field"><label for="pkNew">Eigener Punkt</label><div style="display:flex;gap:8px"><input id="pkNew" autocomplete="off" placeholder="z. B. Sonnenbrille"><button class="btn primary" type="submit">Hinzufügen</button></div></div></form>
+    <p class="note">Häkchen werden nur auf diesem Gerät gespeichert.</p>
   </section>
   <section id="h-infos" hidden style="display:flex;flex-direction:column;gap:10px">
     <div class="acc" id="infoAcc"></div>
@@ -387,7 +409,7 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 
 <nav class="tabs" role="tablist" aria-label="Bereiche">
   <button role="tab" id="tab-reise" data-tab="reise" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Reise</button>
-  <button role="tab" id="tab-ausfluege" data-tab="ausfluege" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20l5-9 4 6 3-4 4 7"/><circle cx="16" cy="6" r="2"/></svg>Ausflüge</button>
+  <button role="tab" id="tab-ausfluege" data-tab="ausfluege" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20l5-9 4 6 3-4 4 7"/><circle cx="16" cy="6" r="2"/></svg>Entdecken</button>
   <button role="tab" id="tab-ausgaben" data-tab="ausgaben" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l5 7 5-7M6 11h12M6 15h12M12 11v9"/></svg>Ausgaben</button>
   <button role="tab" id="tab-hilfe" data-tab="hilfe" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>Hilfe</button>
 </nav>
@@ -623,7 +645,8 @@ function openOverview(){
    <div class="stats">${['todo','warn','ok'].map(k=>`<button class="stat ${k}" data-ovf="${k}" aria-pressed="${ovFilter===k}"><span>${STATUS[k]}</span><strong>${cnt[k]}</strong></button>`).join('')}</div>
    <ul class="blist">${list.map(x=>{const s=effStatus(x);return `<li><button data-open="${x.id}"><span class="a">${x.type==='hotel'?short(x):(x.type==='flight'?'Flug ':x.type==='train'?'Zug ':'')+x.title}</span><span class="p">${x.price?de.format(x.price):x.priceNote||''}</span><span class="b">${fmtDay(x.date).short} · <span class="tag ${s}" style="margin:0">${STATUS[s]}</span></span></button></li>`}).join('')}</ul>
    <div class="sec"><h4>Route</h4><div class="routeline">${STOPS.map((s_,i)=>`${i?'<span>›</span>':''}<span><b>${s_[0]}</b> ${s_[2]} N.</span>`).join('')}</div></div>
-   <div class="sec check"><h4>Vor der Abreise</h4>${PREP.map(([k,t])=>`<label><input type="checkbox" id="${k}" data-prep="${k}" ${prep[k]?'checked':''}><span>${t}</span></label>`).join('')}<p class="note">Häkchen werden nur auf diesem Gerät gespeichert.</p></div>`);
+   <div class="sec check"><h4>Vor der Abreise</h4>${PREP.map(([k,t])=>`<label><input type="checkbox" id="${k}" data-prep="${k}" ${prep[k]?'checked':''}><span>${t}</span></label>`).join('')}<p class="note">Häkchen werden nur auf diesem Gerät gespeichert.</p></div>
+   <div class="sec"><h4>Kalender</h4><p style="margin-bottom:10px">Alle Flüge, Züge, Fahrten und Check-ins mit Erinnerung in deinen iPhone-Kalender übernehmen.</p><a class="btn primary" href="https://alexfeini.github.io/china-reise/china-reise.ics" target="_blank" rel="noopener">In Kalender übernehmen</a><p class="note" style="margin-top:8px">Öffnet die Kalenderdatei. Auf dem iPhone „Alle hinzufügen“ tippen.</p></div>`);
 }
 
 /* ===== Taxi & Großanzeige ===== */
@@ -732,6 +755,22 @@ const INFO=[
  </tbody></table>
  <p><b>Packen:</b> Zwiebel-Look, eine warme Jacke, Mütze und Handschuhe für Beijing, Regenjacke und gute Schuhe für Zhangjiajie.</p>
  <p class="note">Langjährige Durchschnittswerte, kein Wetterbericht.</p>`],
+ ['Metro','Nächste Stationen und Linien',`<p>In Shanghai, Chongqing und Beijing kannst du mit dem QR-Code in Alipay fahren („Transport“ bzw. „出行“) – kein Ticket nötig.</p>
+  <p><b>Shanghai · Hotel am Bund</b></p><ul>
+  <li>Nächste Stationen: <b>Tiantong Road</b> (天潼路, Linie 10 und 12) ca. 15 Min. zu Fuß, <b>East Nanjing Road</b> (南京东路, Linie 2 und 10) über die Garden Bridge ca. 20 Min.</li>
+  <li>Shanghai Tower / Lujiazui: Linie 2 ab East Nanjing Road, 1 Station.</li>
+  <li>Yu Garden: Linie 10 bis Yuyuan Garden (豫园).</li>
+  <li>Xintiandi und French Concession: Linie 10 (Xintiandi, Shanghai Library).</li></ul>
+  <p><b>Chongqing · YOLO Hotel</b></p><ul>
+  <li>Nächste Station: <b>Guanyinqiao</b> (观音桥, Linie 3), wenige Minuten zu Fuß.</li>
+  <li>Liziba und Jiefangbei/Hongya Cave: mit Linie 3 bis Niujiaotuo (牛角沱), dort in die Einschienenbahn Linie 2 umsteigen – Liziba (李子坝) ist eine Station weiter, Linjiangmen (临江门) und Jiaochangkou (较场口) liegen bei Jiefangbei.</li>
+  <li>Yangtze-Seilbahn: Station Xiaoshizi (小什字, Linie 1 und 6). Ciqikou: Linie 1.</li>
+  <li>Bei vielen Treppen und Hügeln ist ein DiDi oft schneller als die Metro.</li></ul>
+  <p><b>Beijing · The Yard Hotel</b></p><ul>
+  <li>Nächste Station: <b>Nanluoguxiang</b> (南锣鼓巷, Linie 6 und 8), ca. 5 Min. zu Fuß.</li>
+  <li>Houhai: Linie 8 bis Shichahai (什刹海), 1 Station.</li>
+  <li>Bahnhof Beijing South: Linie 4 oder 14 – mit Gepäck ist ein Taxi einfacher.</li>
+  <li>Flughafen Daxing: Daxing Airport Express, abends besser Taxi.</li></ul>`],
  ['Strom & Alltag','Steckdose, Wasser, Toiletten',`<ul>
   <li><b>Strom:</b> 220 V. Steckdosen Typ A und I, oft auch für flache Euro-Stecker (Typ C) geeignet. Schuko-Stecker (Föhn, dicke Ladegeräte) passen nicht – einen Reiseadapter mitnehmen.</li>
   <li><b>Leitungswasser</b> nicht trinken. Flaschenwasser ist billig, Hotels stellen meist welches hin.</li>
@@ -795,6 +834,58 @@ const EX=[
  {id:'bj4',city:'Beijing',name:'Verbotene Stadt',zh:'故宫',k:'Halbtag',d:'Der ehemalige Kaiserpalast – riesig und eindrucksvoll.',tips:['Passt zeitlich kaum neben die Mauer. Nur als Alternative.','Tickets nur online mit Reisepass und Tage vorher, montags geschlossen.']},
 ];
 let exCity=(()=>{const c=cityShort(sel);return CITY.some(x=>x[0]===c)?c:'Shanghai'})();
+
+/* ===== Essen ===== */
+// cu: Chinesisch | Deutsch | Westlich ; pr: 1–4 ; zh nur wo sicher bekannt
+const FOOD=[
+ {id:'fs1',city:'Shanghai',name:'Paulaner Wirtshaus North Bund',zh:'宝莱纳 北外滩',cu:'Deutsch',pr:3,area:'North Bund, Dongdaming Road – nah am Hotel',d:'Bayerisches Wirtshaus mit Haxe, Schnitzel und eigenem Bier.',near:1},
+ {id:'fs2',city:'Shanghai',name:'Paulaner Bräuhaus Xintiandi',zh:'宝莱纳 新天地',cu:'Deutsch',pr:3,area:'Xintiandi · Metro Linie 10',d:'Großes Bräuhaus im beliebten Ausgehviertel Xintiandi.'},
+ {id:'fs3',city:'Shanghai',name:'Jia Jia Tang Bao',zh:'佳家汤包',cu:'Chinesisch',pr:1,area:'90 Huanghe Road, People’s Square',d:'Kleiner Laden mit den bekanntesten Xiaolongbao (Suppenteigtaschen) der Stadt.',tip:'Mittags oft Schlange, früh hingehen.'},
+ {id:'fs4',city:'Shanghai',name:'Da Hu Chun',zh:'大壶春',cu:'Chinesisch',pr:1,area:'136 Middle Sichuan Road – ca. 15 Min. zu Fuß',d:'Shengjian: knusprig gebratene Teigtaschen mit Suppe, ein Shanghaier Frühstücksklassiker.',near:1},
+ {id:'fs5',city:'Shanghai',name:'Wang Jia Sha',zh:'王家沙',cu:'Chinesisch',pr:1,area:'805 Nanjing East Road',d:'Traditionsladen für Teigtaschen, Nudeln und Shanghaier Snacks.'},
+ {id:'fs6',city:'Shanghai',name:'Mr & Mrs Bund',cu:'Westlich',pr:4,area:'Direkt am Bund, ca. 15 Min. zu Fuß',d:'Französisch-moderne Küche mit Blick auf Pudong – für einen besonderen Abend.',near:1},
+ {id:'fs7',city:'Shanghai',name:'Victor’s Café',cu:'Westlich',pr:2,area:'Nahe Bund',d:'Italienisch-westliches Café, gut für Frühstück, Pasta und Kaffee.'},
+ {id:'fy1',city:'Yangshuo',name:'Da Shi Fu Beer Fish',zh:'大师傅啤酒鱼',cu:'Chinesisch',pr:2,area:'West Street',d:'Sehr beliebt für Bierfisch, die Spezialität von Yangshuo.'},
+ {id:'fy2',city:'Yangshuo',name:'Xie Da Jie Beer Fish',zh:'谢大姐啤酒鱼',cu:'Chinesisch',pr:2,area:'West Street',d:'Weiterer Bierfisch-Klassiker im Ortskern.'},
+ {id:'fy3',city:'Yangshuo',name:'Mountain Retreat',cu:'Westlich',pr:2,area:'Yulong River Road – in der Nähe deines Hotels',d:'Restaurant eines Boutique-Hotels mit chinesischer und westlicher Karte und Bergblick.',near:1},
+ {id:'fy4',city:'Yangshuo',name:'The Groove',cu:'Deutsch',pr:2,area:'Chengbei Lu, Ortskern',d:'Deutsch geprägte Küche: Brot, Burger und Steaks.'},
+ {id:'fy5',city:'Yangshuo',name:'Luna (Yangshuo Village Inn)',cu:'Westlich',pr:2,area:'Moon Hill, Dachterrasse',d:'Italienisch und chinesisch mit Blick auf die Karstberge.'},
+ {id:'fz1',city:'Zhangjiajie',name:'Zhai Zi Li',cu:'Chinesisch',pr:2,area:'An der Tianmen-Seilbahn – nah am Homestay',d:'Lokale Tujia- und Hunan-Küche, oft gut scharf.',near:1},
+ {id:'fz2',city:'Zhangjiajie',name:'Little Bear Restaurant',cu:'Chinesisch',pr:2,area:'Stadt, nahe Seilbahn',d:'Bei Reisenden beliebt, mit englischer Karte.',near:1},
+ {id:'fz3',city:'Zhangjiajie',name:'Zui Xiang Qin Private Kitchen',cu:'Chinesisch',pr:1,area:'Tianmenshan-Gegend',d:'Günstige Hausmannskost aus Hunan.',near:1},
+ {id:'fz4',city:'Zhangjiajie',name:'Sean’s Kitchen',cu:'Westlich',pr:2,area:'Stadt Zhangjiajie',d:'Steaks und Bar – wenn du mal Abwechslung von scharf willst.'},
+ {id:'fz5',city:'Zhangjiajie',name:'Grimm Restaurant',cu:'Westlich',pr:2,area:'Stadt Zhangjiajie',d:'Amerikanische Küche, Burger und Co.'},
+ {id:'fz6',city:'Zhangjiajie',name:'Gulu Restaurant & Bar',cu:'Westlich',pr:2,area:'Stadt Zhangjiajie',d:'Italienisch und französisch.'},
+ {id:'fc1',city:'Chongqing',name:'Huang Jie Hotpot',zh:'黄姐火锅',cu:'Chinesisch',pr:2,area:'Jiangbei, Gegend Guanyinqiao – nah am Hotel',d:'Lokaler Hotpot, wie ihn die Leute in Chongqing essen.',near:1},
+ {id:'fc2',city:'Chongqing',name:'Deng Mangzi Hotpot',zh:'邓莽子老火锅',cu:'Chinesisch',pr:2,area:'Luzumiao 7, Jiefangbei',d:'Alteingesessener Hotpot im Zentrum.'},
+ {id:'fc3',city:'Chongqing',name:'Duya Hotpot',zh:'独雅老火锅',cu:'Chinesisch',pr:2,area:'Heping Road 203, Jiefangbei',d:'Beliebter Hotpot nahe Jiefangbei-Platz.'},
+ {id:'fc4',city:'Chongqing',name:'Liuyishou Hotpot Jiefangbei',zh:'刘一手火锅 解放碑',cu:'Chinesisch',pr:2,area:'Jiefangbei',d:'Bekannte Hotpot-Kette, etwas komfortabler.'},
+ {id:'fc5',city:'Chongqing',name:'Yu Xiao Mian Jiefangbei',zh:'愚小面 解放碑',cu:'Chinesisch',pr:1,area:'Jiefangbei',d:'Chongqing Xiaomian: scharfe Nudeln, schnell und günstig.'},
+ {id:'fb1',city:'Beijing',name:'Siji Minfu (Peking-Ente)',zh:'四季民福 东安门',cu:'Chinesisch',pr:3,area:'Dong’anmen, nahe Verbotene Stadt – ca. 15 Min. Taxi',d:'Sehr beliebte Peking-Ente zu fairem Preis.',tip:'Lange Wartezeiten – früh hingehen oder Nummer ziehen.'},
+ {id:'fb2',city:'Beijing',name:'Mr. Shi’s Dumplings',cu:'Chinesisch',pr:1,area:'Ca. 600 m vom Hotel',d:'Kleiner Jiaozi-Laden mit englischer Karte.',near:1},
+ {id:'fb3',city:'Beijing',name:'Cafe Zarah',cu:'Westlich',pr:2,area:'Gulou East Street, ca. 500 m vom Hotel',d:'Café mit westlichem Frühstück – passt vor der Mauer-Tour.',near:1},
+ {id:'fb4',city:'Beijing',name:'Mao Mao Chong Bar & Pizza',cu:'Westlich',pr:2,area:'Hutong-Viertel, ca. 500 m vom Hotel',d:'Pizza und Bar im Hutong.',near:1},
+ {id:'fb5',city:'Beijing',name:'Paulaner Bräuhaus (Kempinski)',zh:'普拉那啤酒坊 燕莎',cu:'Deutsch',pr:3,area:'Liangmaqiao, ca. 25 Min. Taxi',d:'Deutsches Bräuhaus im Kempinski Hotel – eher weit für deinen kurzen Aufenthalt.'},
+];
+const PRICE=['','€','€€','€€€','€€€€'];let foodCu='Alle';
+function renderFood(){
+  const cus=['Alle','Chinesisch','Deutsch','Westlich'];
+  document.getElementById('foodCats').innerHTML=cus.map(c=>`<button class="chip" data-foodcu="${c}" aria-pressed="${c===foodCu}">${c}</button>`).join('');
+  const city=exCity==='Gemerkt'?null:exCity;
+  const list=FOOD.filter(f=>(!city||f.city===city)&&(foodCu==='Alle'||f.cu===foodCu));
+  const groups=CITY.filter(c=>list.some(f=>f.city===c[0]));
+  const row=f=>`<div class="exc"><button class="open" data-food="${f.id}"><span class="t">${f.name}</span>${f.zh?`<span class="z">${f.zh}</span>`:''}<span class="m">${f.d}</span><span class="tags"><span class="pill">${f.cu}</span><span class="pill">${PRICE[f.pr]}</span>${f.near?'<span class="pill near">nah am Hotel</span>':''}</span><span class="m" style="font-size:13px;margin-top:4px">${f.area}</span></button><span class="chev">›</span></div>`;
+  document.getElementById('foodList').innerHTML=groups.length?groups.map(c=>`<section class="card"><h3>${c[0]}</h3>${list.filter(f=>f.city===c[0]).map(row).join('')}</section>`).join(''):`<div class="card empty">Für diese Auswahl gibt es hier keinen Eintrag${foodCu==='Deutsch'?' – in dieser Stadt kenne ich kein deutsches Restaurant':''}.</div>`;
+}
+function openFood(id){const f=FOOD.find(x=>x.id===id);if(!f)return;const q=f.zh||(f.name+' '+f.city);
+  openSheet(`${top_('Essen · '+f.city)}<h3 id="sh-title">${f.name}</h3>${f.zh?`<div class="sh-full zh" style="font-size:16px">${f.zh}</div>`:''}
+   <div class="tags" style="margin:8px 0 12px"><span class="pill">${f.cu}</span><span class="pill">${PRICE[f.pr]}</span>${f.near?'<span class="pill near">nah am Hotel</span>':''}</div>
+   <div class="btns">${f.zh?`<button class="btn primary" data-foodtaxi="${f.id}">Taxi-Karte zeigen</button>`:''}${mapLinks(q)}</div>
+   <p style="margin:0;font-size:15px">${f.d}</p>
+   <div class="sec"><h4>Lage</h4><p>${f.area}</p></div>
+   ${f.tip?`<div class="sec"><h4>Tipp</h4><p>${f.tip}</p></div>`:''}
+   <p class="note" style="margin-top:14px">Öffnungszeiten vorher in Amap oder Trip.com prüfen.</p>`)}
+function showDseg(k){document.getElementById('d-ex').hidden=k!=='ex';document.getElementById('d-food').hidden=k!=='food';document.querySelectorAll('[data-dseg]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dseg===k));if(k==='food'&&exCity==='Gemerkt'){exCity='Shanghai';renderEx()}renderFood()}
 function renderEx(){
   const favN=EX.filter(e=>fav[e.id]).length;
   document.getElementById('exCats').innerHTML=[...CITY.map(c=>c[0]),'Gemerkt'].map(c=>`<button class="chip" data-excity="${c}" aria-pressed="${c===exCity}">${c==='Gemerkt'?'☆ Gemerkt ('+favN+')':c}</button>`).join('');
@@ -828,15 +919,39 @@ document.getElementById('expForm').addEventListener('submit',e=>{e.preventDefaul
   if(!(amt>0)){err.textContent='Bitte einen Betrag größer als 0 eingeben, z. B. 45 oder 12,50.';err.hidden=false;document.getElementById('eAmt').focus();return}
   err.hidden=true;exps.push({id:Date.now().toString(36),amt:Math.round(amt*100)/100,cur,cat:document.getElementById('eCat').value,date:document.getElementById('eDate').value||defaultDate(),note:document.getElementById('eNote').value.trim()});
   store.set('cr-exp',exps);document.getElementById('eAmt').value='';document.getElementById('eNote').value='';renderExp()});
-document.getElementById('eRate').addEventListener('change',e=>{const v=parseFloat(e.target.value.replace(',','.'));if(v>0){rate=v;store.set('cr-rate',rate);renderExp()}else e.target.value=String(rate).replace('.',',')});
+document.getElementById('eRate').addEventListener('change',e=>{const v=parseFloat(e.target.value.replace(',','.'));if(v>0){rate=v;store.set('cr-rate',rate);renderExp();convNote()}else e.target.value=String(rate).replace('.',',')});
 
+
+/* ===== Packliste ===== */
+const PACK=[
+ ['Dokumente & Geld',['Reisepass (mind. 6 Monate gültig)','Pass-Kopie digital im Handy','Kreditkarte(n) – in Alipay hinterlegt','Etwas Euro-Bargeld zum Tauschen','Auslandskrankenversicherung']],
+ ['Technik',['Reiseadapter (Steckdose Typ A / I)','Powerbank mit 3C-Logo','Ladekabel & Netzteil','eSIM eingerichtet / VPN installiert','Kopfhörer für lange Zugfahrten']],
+ ['Drohne',['Drohne','Akkus (ins Handgepäck)','Ladegerät','Ersatz-Propeller','Speicherkarte']],
+ ['Kleidung',['Warme Jacke für Beijing (bis −3 °C)','Mütze & Handschuhe','Regenjacke','Gute Wander- oder Trekkingschuhe','Pullover zum Drüberziehen','Badesachen – das Hotel in Chongqing hat eine private heiße Quelle']],
+ ['Gesundheit & Alltag',['Reiseapotheke & eigene Medikamente','Taschentücher (für Toiletten)','Feuchttücher / Desinfektion','Tagesrucksack','Trinkflasche']],
+];
+let pack=store.get('cr-pack')||{},packOwn=store.get('cr-packown')||[];
+function renderPack(){
+  const all=[];PACK.forEach(([c,items])=>items.forEach((t,i)=>all.push('p-'+c+'-'+i)));packOwn.forEach(o=>all.push(o.id));
+  const n=all.filter(k=>pack[k]).length;
+  document.getElementById('packCount').textContent=`${n} von ${all.length} eingepackt`;
+  const item=(k,t,own)=>`<label class="pk"><input type="checkbox" ${pack[k]?'checked':''} data-pk="${k}"><span>${t}</span>${own?`<button type="button" class="del" data-pkdel="${k}" aria-label="Entfernen">×</button>`:''}</label>`;
+  document.getElementById('packList').innerHTML=PACK.map(([c,items])=>`<section class="card check"><h3>${c}</h3>${items.map((t,i)=>item('p-'+c+'-'+i,t)).join('')}</section>`).join('')+(packOwn.length?`<section class="card check"><h3>Eigene Punkte</h3>${packOwn.map(o=>item(o.id,o.t,1)).join('')}</section>`:'');
+}
+document.getElementById('packForm').addEventListener('submit',e=>{e.preventDefault();const i=document.getElementById('pkNew');const t=i.value.trim();if(!t)return;packOwn.push({id:'own-'+Date.now().toString(36),t});store.set('cr-packown',packOwn);i.value='';renderPack()});
+
+function num(v){const r=String(v).trim().replace(/\s/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.');return parseFloat(r)}
+const fmt2=v=>v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+function convNote(){document.getElementById('cvNote').textContent=`Kurs 1 € = ${String(rate).replace('.',',')} ¥ · 100 ¥ ≈ ${fmt2(100/rate)} €`}
+document.getElementById('cvY').addEventListener('input',e=>{const v=num(e.target.value);document.getElementById('cvE').value=v>=0?fmt2(v/rate):''});
+document.getElementById('cvE').addEventListener('input',e=>{const v=num(e.target.value);document.getElementById('cvY').value=v>=0?fmt2(v*rate):''});
 /* ===== Navigation ===== */
 const TABS=['reise','ausfluege','ausgaben','hilfe'];
 function showTab(t){if(!TABS.includes(t))t='reise';TABS.forEach(x=>{document.getElementById('v-'+x).hidden=x!==t;document.getElementById('tab-'+x).setAttribute('aria-selected',x===t)});window.scrollTo(0,0)}
-function showSeg(k){['taxi','saetze','infos'].forEach(x=>{document.getElementById('h-'+x).hidden=x!==k;document.querySelector(`[data-seg="${x}"]`).setAttribute('aria-pressed',x===k)})}
+function showSeg(k){['taxi','saetze','packen','infos'].forEach(x=>{document.getElementById('h-'+x).hidden=x!==k;document.querySelector(`[data-seg="${x}"]`).setAttribute('aria-pressed',x===k)})}
 
 document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-tab],[data-open],[data-day],[data-qa],[data-taxi],[data-extaxi],[data-excity],[data-star],[data-overview],[data-ovf],[data-close],[data-bigclose],[data-copy],[data-ph],[data-phcat],[data-seg],[data-cur],[data-del]');if(!b)return;
+  const b=e.target.closest('[data-tab],[data-open],[data-day],[data-qa],[data-taxi],[data-extaxi],[data-excity],[data-star],[data-overview],[data-ovf],[data-close],[data-bigclose],[data-copy],[data-ph],[data-phcat],[data-seg],[data-cur],[data-del],[data-dseg],[data-foodcu],[data-food],[data-foodtaxi],[data-pkdel]');if(!b)return;
   const d=b.dataset;
   if(d.tab){closeSheet();showTab(d.tab)}
   else if(d.open){if(d.open.startsWith('ex:'))openEx(d.open.slice(3));else{const it=D.find(x=>x.id===d.open);it&&it.exLink?openEx(it.exLink):openItem(d.open)}}
@@ -844,7 +959,12 @@ document.addEventListener('click',e=>{
   else if(d.qa){if(d.qa==='taxi'){heroTaxi?showTaxi(heroTaxi):(showTab('hilfe'),showSeg('taxi'))}else if(d.qa==='saetze'){showTab('hilfe');showSeg('saetze')}else if(d.qa==='geld'){showTab('ausgaben');document.getElementById('eAmt').focus()}else{showTab('hilfe')}}
   else if(d.taxi)showTaxi(d.taxi);
   else if(d.extaxi){const q=EX.find(y=>y.id===d.extaxi);showBig(`<div class="hint">请带我去这里 · 谢谢</div><div class="zh">${q.zh}</div><div class="de">${q.name}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>`)}
-  else if(d.excity){exCity=d.excity;renderEx();closeSheet();showTab('ausfluege')}
+  else if(d.excity){exCity=d.excity;renderEx();renderFood();closeSheet();showTab('ausfluege')}
+  else if(d.dseg)showDseg(d.dseg);
+  else if(d.foodcu){foodCu=d.foodcu;renderFood()}
+  else if(d.food)openFood(d.food);
+  else if(d.foodtaxi){const f=FOOD.find(y=>y.id===d.foodtaxi);showBig(`<div class="hint">请带我去这里 · 谢谢</div><div class="zh">${f.zh}</div><div class="de">${f.name}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>`)}
+  else if(d.pkdel){packOwn=packOwn.filter(x=>x.id!==d.pkdel);store.set('cr-packown',packOwn);renderPack()}
   else if(d.star){fav[d.star]=!fav[d.star];store.set('cr-fav',fav);renderEx();if(b.closest('#sheet'))openEx(d.star)}
   else if(b.hasAttribute('data-overview')){ovFilter=null;openOverview()}
   else if(d.ovf){ovFilter=ovFilter===d.ovf?null:d.ovf;openOverview()}
@@ -861,9 +981,10 @@ scrim.addEventListener('click',closeSheet);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!big.hidden)closeBig();else closeSheet()}});
 document.addEventListener('change',e=>{const t=e.target;
   if(t.dataset.done){done[t.dataset.done]=t.checked;store.set('cr-done',done);renderReise();openItem(t.dataset.done)}
-  else if(t.dataset.prep){prep[t.dataset.prep]=t.checked;store.set('cr-prep',prep)}});
+  else if(t.dataset.prep){prep[t.dataset.prep]=t.checked;store.set('cr-prep',prep)}
+  else if(t.dataset.pk){pack[t.dataset.pk]=t.checked;store.set('cr-pack',pack);renderPack()}});
 
-renderReise();renderEx();renderTaxiList();renderPhrases();renderInfos();initExp();renderExp();showSeg('taxi');
+renderReise();renderEx();renderFood();renderPack();convNote();renderTaxiList();renderPhrases();renderInfos();initExp();renderExp();showSeg('taxi');
 setInterval(()=>{renderTop();renderHero()},30000);
 const h0=(location.hash||'').slice(1);showTab(TABS.includes(h0)?h0:'reise');
 </script>
