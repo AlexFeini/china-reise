@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Einkauf">
+<meta name="theme-color" content="#0B0C0D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>Einkaufsliste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Dunkles Design passend zur China-Reise-App. Drei Bereiche: Liste, Märkte, Produkte. */
+:root{
+  --bg:#0B0C0D; --panel:#17191B; --panel-2:#202326; --line:#2E3236; --line-2:#3A3F44;
+  --ink:#F4F5F6; --muted:#9AA0A6; --faint:#5E646A;
+  --green:#3FBF6F; --green-soft:rgba(63,191,111,.14); --blue:#3E6AE1; --amber:#E5A13A; --red:#E8574B;
+  --f:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --top:env(safe-area-inset-top,0px); --bot:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--f);min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:640px;margin:0 auto;padding:calc(var(--top) + 16px) 16px calc(var(--bot) + 96px)}
+header h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em}
+header p{margin:2px 0 16px;color:var(--muted);font-size:13px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}
+.panel + .panel{margin-top:12px}
+.row{display:flex;gap:8px;align-items:center}
+.input{flex:1;min-width:0;background:var(--panel-2);border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;outline:none}
+.input:focus{border-color:var(--green)}
+.btn{background:var(--green);color:#06150C;border:0;border-radius:12px;padding:12px 16px;font-weight:700;white-space:nowrap}
+.btn.ghost{background:var(--panel-2);color:var(--ink);border:1px solid var(--line-2);font-weight:600}
+.btn.small{padding:8px 12px;font-size:13px;border-radius:10px}
+.btn:disabled{opacity:.5}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line-2);background:var(--panel);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:6px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.15)}
+.muted{color:var(--muted)} .faint{color:var(--faint)} .small{font-size:13px}
+.hint{font-size:12px;color:var(--faint);margin:10px 2px 0}
+h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 4px 8px;font-weight:700}
+
+/* Liste */
+.item{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.check{width:26px;height:26px;border-radius:50%;border:2px solid var(--line-2);background:none;flex:none;display:grid;place-items:center;padding:0}
+.item.done .check{background:var(--green);border-color:var(--green)}
+.item.done .check::after{content:"";width:10px;height:6px;border:solid #06150C;border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
+.item .txt{flex:1;min-width:0}
+.item .name{font-weight:600;overflow-wrap:anywhere}
+.item.done .name{text-decoration:line-through;color:var(--faint)}
+.item .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.item img{width:36px;height:36px;object-fit:contain;border-radius:8px;background:#fff;flex:none}
+.qty{display:flex;align-items:center;gap:2px;flex:none}
+.qty button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line-2);background:var(--panel-2);padding:0;line-height:1}
+.qty span{min-width:22px;text-align:center;font-weight:700;font-size:14px}
+.del{background:none;border:0;color:var(--faint);font-size:20px;padding:4px 6px;line-height:1}
+.empty{text-align:center;color:var(--muted);padding:28px 10px}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+.listfoot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px}
+
+/* Märkte */
+.market{display:flex;gap:12px;align-items:flex-start;padding:12px 4px;border-bottom:1px solid var(--line)}
+.market:last-child{border-bottom:0}
+.logo{width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;font-weight:800;font-size:12px;letter-spacing:-.02em}
+.market .txt{flex:1;min-width:0}
+.market .name{font-weight:700}
+.market .addr,.market .hours{font-size:12.5px;color:var(--muted)}
+.market .acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.market.fav{background:var(--green-soft);border-radius:12px;padding-left:10px;padding-right:10px;border-bottom-color:transparent}
+.dist{font-weight:700;font-size:13px;white-space:nowrap}
+.status{padding:14px 4px;color:var(--muted);font-size:14px}
+.status.err{color:var(--red)}
+
+/* Produkte */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+@media (min-width:520px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.prod{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.prod .img{aspect-ratio:1;background:#fff;display:grid;place-items:center}
+.prod .img img{max-width:88%;max-height:88%;object-fit:contain}
+.prod .img .noimg{color:#999;font-size:12px}
+.prod .body{padding:10px;display:flex;flex-direction:column;gap:2px;flex:1}
+.prod .pname{font-weight:600;font-size:13.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prod .brand{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prod .add{margin-top:auto;padding-top:8px}
+.prod .add .btn{width:100%}
+.prod .add .btn.added{background:var(--panel-2);color:var(--green);border:1px solid var(--green)}
+
+/* Tab-Leiste */
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(11,12,13,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 8px calc(var(--bot) + 8px);display:flex;justify-content:center;gap:4px;z-index:5}
+nav button{flex:1;max-width:200px;background:none;border:0;color:var(--faint);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11.5px;font-weight:600;padding:6px 0;border-radius:12px;position:relative}
+nav button svg{width:24px;height:24px}
+nav button[aria-selected="true"]{color:var(--ink)}
+nav button[aria-selected="true"] svg{color:var(--green)}
+.badge{position:absolute;top:2px;left:calc(50% + 6px);background:var(--green);color:#06150C;font-size:10.5px;font-weight:800;border-radius:999px;padding:0 6px;line-height:17px}
+[hidden]{display:none!important}
+.toast{position:fixed;left:50%;bottom:calc(var(--bot) + 84px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;font-size:14px;z-index:9;opacity:0;transition:opacity .2s;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LISTE -->
+  <section id="tab-liste">
+    <header><h1>Einkaufsliste</h1><p id="liste-sub">Was brauchst du?</p></header>
+    <form class="row" id="add-form" autocomplete="off">
+      <input class="input" id="add-input" placeholder="z.B. Milch, Bananen, Brot …" enterkeyhint="done" aria-label="Artikel hinzufügen">
+      <button class="btn" type="submit">Hinzufügen</button>
+    </form>
+    <div class="chips" id="list-store-chips" style="margin-top:12px" aria-label="Für welchen Markt"></div>
+    <div id="list-groups"></div>
+    <div class="listfoot" id="list-foot" hidden>
+      <span class="small muted" id="list-count"></span>
+      <button class="btn ghost small" id="clear-done">Erledigte löschen</button>
+    </div>
+  </section>
+
+  <!-- MÄRKTE -->
+  <section id="tab-maerkte" hidden>
+    <header><h1>Märkte in der Nähe</h1><p>Netto, Edeka, Aldi, Lidl und Rewe</p></header>
+    <div class="panel">
+      <button class="btn" id="locate" style="width:100%">📍 Meinen Standort verwenden</button>
+      <form class="row" id="place-form" style="margin-top:10px" autocomplete="off">
+        <input class="input" id="place-input" placeholder="oder PLZ / Ort eingeben" enterkeyhint="search" aria-label="PLZ oder Ort">
+        <button class="btn ghost" type="submit">Suchen</button>
+      </form>
+      <div class="row" style="margin-top:10px">
+        <span class="small muted">Umkreis</span>
+        <select class="input" id="radius" style="flex:none;padding:8px 10px" aria-label="Umkreis">
+          <option value="1000">1 km</option><option value="2000">2 km</option><option value="3000" selected>3 km</option><option value="5000">5 km</option><option value="10000">10 km</option>
+        </select>
+      </div>
+    </div>
+    <div class="chips" id="market-chips" style="margin-top:12px"></div>
+    <div class="panel" id="market-panel" hidden><div id="market-list"></div></div>
+    <p class="hint">Daten von OpenStreetMap. Dein Standort wird nur für die Suche verwendet und nirgends gespeichert. Tippe auf ★, um einen Markt als deinen Stammmarkt zu merken.</p>
+  </section>
+
+  <!-- PRODUKTE -->
+  <section id="tab-produkte" hidden>
+    <header><h1>Produkte</h1><p id="prod-sub">Sortiment der Ketten durchsuchen</p></header>
+    <div class="chips" id="prod-chips"></div>
+    <form class="row" id="prod-form" autocomplete="off">
+      <input class="input" id="prod-input" placeholder="z.B. Haferflocken, Joghurt …" enterkeyhint="search" aria-label="Produkt suchen">
+      <button class="btn" type="submit">Suchen</button>
+    </form>
+    <div id="prod-status" class="status" hidden></div>
+    <div class="grid" id="prod-grid"></div>
+    <div style="text-align:center;margin-top:14px"><button class="btn ghost small" id="prod-more" hidden>Mehr laden</button></div>
+    <p class="hint">Produktdaten von Open Food Facts, einer freien Datenbank. Sie zeigt, was es bei der Kette gibt, aber nicht den genauen Bestand deiner Filiale und keine Preise. Die Märkte bieten dafür keine öffentliche Schnittstelle.</p>
+  </section>
+</div>
+
+<nav role="tablist">
+  <button role="tab" data-tab="liste" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>
+    Liste<span class="badge" id="badge" hidden></span>
+  </button>
+  <button role="tab" data-tab="maerkte" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+    Märkte
+  </button>
+  <button role="tab" data-tab="produkte" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    Produkte
+  </button>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+// ---------- Ketten ----------
+const CHAINS = {
+  netto: {name:'Netto', bg:'#FFD500', fg:'#D8001A', short:'N', off:['netto','netto-marken-discount']},
+  edeka: {name:'Edeka', bg:'#1A4A9C', fg:'#FFD400', short:'E', off:['edeka']},
+  aldi:  {name:'Aldi',  bg:'#00205B', fg:'#F2A900', short:'A', off:['aldi','aldi-sud','aldi-nord']},
+  lidl:  {name:'Lidl',  bg:'#0050AA', fg:'#FFF000', short:'L', off:['lidl']},
+  rewe:  {name:'Rewe',  bg:'#CC071E', fg:'#FFFFFF', short:'R', off:['rewe']},
+};
+const CHAIN_KEYS = Object.keys(CHAINS);
+function chainOf(tags){
+  const s = [tags.brand, tags.name, tags.operator].filter(Boolean).join(' ').toLowerCase();
+  if (/\bnetto\b/.test(s)) return 'netto';
+  if (/edeka|e center|e-center|marktkauf|nah ?& ?gut|nah und gut/.test(s)) return 'edeka';
+  if (/\baldi\b/.test(s)) return 'aldi';
+  if (/\blidl\b/.test(s)) return 'lidl';
+  if (/\brewe\b/.test(s)) return 'rewe';
+  return null;
+}
+
+// ---------- Kategorien (Reihenfolge wie ein typischer Gang durch den Markt) ----------
+const CATS = [
+  ['Obst & Gemüse', /apfel|äpfel|banane|birne|orange|zitrone|limette|traube|beere|kiwi|mango|melone|ananas|tomate|gurke|paprika|salat|zwiebel|knoblauch|kartoffel|möhre|karotte|zucchini|brokkoli|blumenkohl|spinat|pilz|champignon|lauch|avocado|kräuter|petersilie|basilikum|ingwer|obst|gemüse|radieschen|sellerie|kohl|aubergine|kürbis/],
+  ['Brot & Backwaren', /brot|brötchen|toast|baguette|croissant|semmel|laugen|brezel|kuchen|wrap|tortilla|knäcke/],
+  ['Kühlregal', /milch|joghurt|jogurt|quark|käse|butter|sahne|schmand|frischkäse|mozzarella|feta|eier|\bei\b|skyr|kefir|margarine|pudding|hafermilch|aufstrich/],
+  ['Fleisch & Fisch', /fleisch|hähnchen|huhn|pute|rind|schwein|hack|wurst|salami|schinken|speck|lachs|fisch|thunfisch|garnele|steak|schnitzel|würstchen|aufschnitt|tofu/],
+  ['Vorrat', /nudel|pasta|spaghetti|reis|mehl|zucker|salz|pfeffer|öl|essig|dose|konserve|linsen|bohnen|kichererbsen|haferflocken|müsli|cornflakes|honig|marmelade|nutella|ketchup|senf|mayo|soße|sauce|brühe|gewürz|tomatenmark|passata|kaffee|tee|kakao|backpulver|hefe/],
+  ['Tiefkühl', /tiefkühl|tk-|tk |pizza|eis\b|eiscreme|pommes|fischstäbchen|erbsen/],
+  ['Süßes & Snacks', /schokolade|schoko|chips|kekse|keks|gummibärchen|bonbon|süß|riegel|nüsse|cracker|popcorn|salzstangen/],
+  ['Getränke', /wasser|saft|cola|limo|bier|wein|sekt|sprudel|schorle|getränk|energy|eistee|smoothie/],
+  ['Drogerie & Haushalt', /klopapier|toilettenpapier|küchenrolle|zahnpasta|zahnbürste|shampoo|duschgel|seife|deo|spülmittel|waschmittel|müllbeutel|taschentücher|windeln|creme|tabs|schwamm|alufolie|backpapier|frischhaltefolie|batterie/],
+];
+const CAT_ORDER = [...CATS.map(c => c[0]), 'Sonstiges'];
+function guessCat(name){
+  const n = name.toLowerCase();
+  for (const [cat, re] of CATS) if (re.test(n)) return cat;
+  return 'Sonstiges';
+}
+
+// ---------- Speicher ----------
+const store = {
+  get(k, d){ try { const v = localStorage.getItem('einkauf.' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v){ try { localStorage.setItem('einkauf.' + k, JSON.stringify(v)); } catch (e) {} },
+};
+let items = store.get('items', []);
+let favMarket = store.get('fav', null);       // {id, chain, name, addr, lat, lon}
+let listChain = store.get('listChain', null); // Markt für neue Artikel
+let prodChain = store.get('prodChain', favMarket ? favMarket.chain : 'lidl');
+const save = () => store.set('items', items);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+// ---------- Helfer ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800); }
+function logo(key, size){
+  const c = CHAINS[key]; if (!c) return '';
+  const st = size ? `width:${size}px;height:${size}px;border-radius:${size/3.5}px;font-size:${size/3.2}px` : '';
+  return `<span class="logo" style="background:${c.bg};color:${c.fg};${st}">${c.short}</span>`;
+}
+const dot = key => `<span class="dot" style="background:${CHAINS[key].bg}"></span>`;
+
+// ---------- Tabs ----------
+function showTab(name){
+  document.querySelectorAll('nav button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === name));
+  ['liste','maerkte','produkte'].forEach(t => $('#tab-' + t).hidden = t !== name);
+  store.set('tab', name);
+  window.scrollTo(0, 0);
+  if (name === 'produkte') renderProdChips();
+}
+document.querySelectorAll('nav button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+
+// ---------- Liste ----------
+function addItem(name, extra = {}){
+  name = name.trim(); if (!name) return;
+  const same = items.find(i => !i.done && i.name.toLowerCase() === name.toLowerCase() && (i.chain || null) === (extra.chain ?? listChain));
+  if (same) { same.qty = (same.qty || 1) + 1; }
+  else items.push({id: uid(), name, qty: 1, done: false, cat: extra.cat || guessCat(name), chain: extra.chain ?? listChain, img: extra.img || null, brand: extra.brand || null, added: Date.now()});
+  save(); renderList();
+}
+$('#add-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const inp = $('#add-input');
+  // Mehrere Artikel auf einmal: "Milch, Eier, Brot"
+  inp.value.split(/[,;\n]/).forEach(n => addItem(n));
+  inp.value = ''; inp.focus();
+});
+
+function renderListChips(){
+  const el = $('#list-store-chips');
+  const opts = [[null, 'Egal wo']].concat(CHAIN_KEYS.map(k => [k, CHAINS[k].name]));
+  el.innerHTML = opts.map(([k, label]) =>
+    `<button class="chip" data-k="${k ?? ''}" aria-pressed="${(listChain ?? '') === (k ?? '')}">${k ? dot(k) : ''}${esc(label)}</button>`).join('');
+  el.querySelectorAll('button').forEach(b => b.onclick = () => { listChain = b.dataset.k || null; store.set('listChain', listChain); renderListChips(); });
+}
+
+function renderList(){
+  const open = items.filter(i => !i.done), done = items.filter(i => i.done);
+  const badge = $('#badge'); badge.hidden = !open.length; badge.textContent = open.length;
+  $('#liste-sub').textContent = favMarket ? `Stammmarkt: ${favMarket.name}${favMarket.addr ? ', ' + favMarket.addr : ''}` : 'Was brauchst du?';
+  const box = $('#list-groups');
+  if (!items.length) {
+    box.innerHTML = `<div class="panel empty"><b>Deine Liste ist leer</b>Tippe oben einen Artikel ein, mehrere gehen mit Komma getrennt. Oder such im Tab „Produkte“ nach Artikeln deines Markts.</div>`;
+    $('#list-foot').hidden = true; return;
+  }
+  const groups = {};
+  open.forEach(i => (groups[i.cat] ||= []).push(i));
+  let html = '';
+  CAT_ORDER.filter(c => groups[c]).forEach(c => {
+    html += `<h2>${esc(c)}</h2><div class="panel" style="padding:4px 12px">${groups[c].map(itemHTML).join('')}</div>`;
+  });
+  if (done.length) html += `<h2>Erledigt (${done.length})</h2><div class="panel" style="padding:4px 12px">${done.map(itemHTML).join('')}</div>`;
+  box.innerHTML = html;
+  $('#list-foot').hidden = !done.length;
+  $('#list-count').textContent = `${open.length} offen · ${done.length} erledigt`;
+}
+function itemHTML(i){
+  return `<div class="item${i.done ? ' done' : ''}" data-id="${i.id}">
+    <button class="check" data-act="toggle" aria-label="${i.done ? 'Wieder offen' : 'Abhaken'}"></button>
+    ${i.img ? `<img src="${esc(i.img)}" alt="" loading="lazy">` : ''}
+    <div class="txt"><div class="name">${esc(i.name)}</div>
+      ${(i.chain || i.brand) ? `<div class="meta">${i.chain && CHAINS[i.chain] ? `<span class="row" style="gap:5px">${dot(i.chain)}${CHAINS[i.chain].name}</span>` : ''}${i.brand ? `<span>${esc(i.brand)}</span>` : ''}</div>` : ''}
+    </div>
+    ${i.done ? '' : `<div class="qty"><button data-act="minus" aria-label="Weniger">−</button><span>${i.qty}</span><button data-act="plus" aria-label="Mehr">+</button></div>`}
+    <button class="del" data-act="del" aria-label="Löschen">×</button>
+  </div>`;
+}
+$('#list-groups').addEventListener('click', e => {
+  const btn = e.target.closest('[data-act]'); if (!btn) return;
+  const it = items.find(i => i.id === btn.closest('.item').dataset.id); if (!it) return;
+  const act = btn.dataset.act;
+  if (act === 'toggle') it.done = !it.done;
+  if (act === 'plus') it.qty++;
+  if (act === 'minus') { if (it.qty > 1) it.qty--; else it.done = true; }
+  if (act === 'del') { items = items.filter(i => i !== it); toast(`„${it.name}“ gelöscht`); }
+  save(); renderList();
+});
+$('#clear-done').onclick = () => { items = items.filter(i => !i.done); save(); renderList(); };
+
+// ---------- Märkte (OpenStreetMap / Overpass) ----------
+const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
+let markets = [], marketFilter = null, lastPos = null;
+
+async function overpass(q){
+  let lastErr;
+  for (const url of OVERPASS) {
+    try {
+      const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 25000);
+      const res = await fetch(url, {method:'POST', body:'data=' + encodeURIComponent(q), headers:{'Content-Type':'application/x-www-form-urlencoded'}, signal: ctrl.signal});
+      clearTimeout(t);
+      if (res.ok) return await res.json();
+      lastErr = new Error('HTTP ' + res.status);
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr;
+}
+function distM(a, b){
+  const R = 6371000, r = x => x * Math.PI / 180;
+  const dLat = r(b.lat - a.lat), dLon = r(b.lon - a.lon);
+  const h = Math.sin(dLat/2)**2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+const fmtDist = m => m < 1000 ? `${Math.round(m / 10) * 10} m` : `${(m / 1000).toFixed(1).replace('.', ',')} km`;
+function fmtHours(h){
+  if (!h) return '';
+  const days = {Mo:'Mo',Tu:'Di',We:'Mi',Th:'Do',Fr:'Fr',Sa:'Sa',Su:'So',PH:'Feiertag'};
+  return h.replace(/\b(Mo|Tu|We|Th|Fr|Sa|Su|PH)\b/g, d => days[d]).replace(/\boff\b/g, 'geschlossen').replace(/;\s*/g, ' · ');
+}
+
+async function findMarkets(pos, label){
+  lastPos = pos;
+  const r = +$('#radius').value;
+  const status = msg => { $('#market-panel').hidden = false; $('#market-list').innerHTML = `<div class="status">${msg}</div>`; };
+  status(`Suche Märkte ${label ? 'bei ' + esc(label) : 'in deiner Nähe'} …`);
+  const re = 'Netto|EDEKA|Edeka|E center|Marktkauf|ALDI|Aldi|Lidl|LIDL|REWE|Rewe';
+  const q = `[out:json][timeout:25];(nwr["shop"="supermarket"]["brand"~"${re}"](around:${r},${pos.lat},${pos.lon});nwr["shop"="supermarket"]["name"~"${re}"](around:${r},${pos.lat},${pos.lon}););out center tags;`;
+  try {
+    const data = await overpass(q);
+    const seen = new Set();
+    markets = data.elements.map(el => {
+      const t = el.tags || {}, chain = chainOf(t);
+      const lat = el.lat ?? el.center?.lat, lon = el.lon ?? el.center?.lon;
+      if (!chain || lat == null) return null;
+      const id = el.type + '/' + el.id; if (seen.has(id)) return null; seen.add(id);
+      const street = [t['addr:street'], t['addr:housenumber']].filter(Boolean).join(' ');
+      const city = [t['addr:postcode'], t['addr:city']].filter(Boolean).join(' ');
+      return {id, chain, name: t.name || CHAINS[chain].name, addr: [street, city].filter(Boolean).join(', '), hours: t.opening_hours || '', lat, lon, d: distM(pos, {lat, lon})};
+    }).filter(Boolean).sort((a, b) => a.d - b.d);
+    renderMarkets();
+  } catch (e) {
+    $('#market-list').innerHTML = `<div class="status err">Die Märkte konnten nicht geladen werden. Der Kartendienst ist gerade nicht erreichbar, bitte versuch es gleich nochmal.</div>`;
+  }
+}
+function renderMarketChips(){
+  const el = $('#market-chips');
+  if (!markets.length) { el.innerHTML = ''; return; }
+  const counts = {}; markets.forEach(m => counts[m.chain] = (counts[m.chain] || 0) + 1);
+  const opts = [[null, `Alle (${markets.length})`]].concat(CHAIN_KEYS.filter(k => counts[k]).map(k => [k, `${CHAINS[k].name} (${counts[k]})`]));
+  el.innerHTML = opts.map(([k, label]) => `<button class="chip" data-k="${k ?? ''}" aria-pressed="${(marketFilter ?? '') === (k ?? '')}">${k ? dot(k) : ''}${label}</button>`).join('');
+  el.querySelectorAll('button').forEach(b => b.onclick = () => { marketFilter = b.dataset.k || null; renderMarkets(); });
+}
+function renderMarkets(){
+  renderMarketChips();
+  const list = markets.filter(m => !marketFilter || m.chain === marketFilter);
+  $('#market-panel').hidden = false;
+  if (!list.length) { $('#market-list').innerHTML = `<div class="status">Keine passenden Märkte im Umkreis gefunden. Vergrößere den Umkreis.</div>`; return; }
+  $('#market-list').innerHTML = list.map(m => {
+    const fav = favMarket && favMarket.id === m.id;
+    const maps = `https://maps.apple.com/?daddr=${m.lat},${m.lon}&q=${encodeURIComponent(m.name)}`;
+    return `<div class="market${fav ? ' fav' : ''}" data-id="${esc(m.id)}">
+      ${logo(m.chain)}
+      <div class="txt">
+        <div class="row" style="justify-content:space-between;align-items:baseline"><span class="name">${esc(m.name)}</span><span class="dist">${fmtDist(m.d)}</span></div>
+        ${m.addr ? `<div class="addr">${esc(m.addr)}</div>` : ''}
+        ${m.hours ? `<div class="hours">🕒 ${esc(fmtHours(m.hours))}</div>` : ''}
+        <div class="acts">
+          <button class="btn small" data-act="products">Produkte</button>
+          <a class="btn ghost small" href="${maps}" target="_blank" rel="noopener" style="text-decoration:none">Route</a>
+          <button class="btn ghost small" data-act="fav" aria-pressed="${fav}">${fav ? '★ Stammmarkt' : '☆ Merken'}</button>
+        </div>
+      </div></div>`;
+  }).join('');
+}
+$('#market-list').addEventListener('click', e => {
+  const btn = e.target.closest('[data-act]'); if (!btn) return;
+  const m = markets.find(x => x.id === btn.closest('.market').dataset.id); if (!m) return;
+  if (btn.dataset.act === 'fav') {
+    if (favMarket && favMarket.id === m.id) { favMarket = null; toast('Stammmarkt entfernt'); }
+    else { favMarket = {id: m.id, chain: m.chain, name: m.name, addr: m.addr, lat: m.lat, lon: m.lon}; listChain = m.chain; store.set('listChain', listChain); toast(`${m.name} ist jetzt dein Stammmarkt`); }
+    store.set('fav', favMarket); renderMarkets(); renderList(); renderListChips();
+  }
+  if (btn.dataset.act === 'products') { setProdChain(m.chain); showTab('produkte'); }
+});
+$('#locate').onclick = () => {
+  if (!navigator.geolocation) { toast('Standort wird von diesem Browser nicht unterstützt'); return; }
+  const b = $('#locate'); b.disabled = true; b.textContent = 'Standort wird ermittelt …';
+  navigator.geolocation.getCurrentPosition(p => {
+    b.disabled = false; b.textContent = '📍 Meinen Standort verwenden';
+    findMarkets({lat: p.coords.latitude, lon: p.coords.longitude});
+  }, err => {
+    b.disabled = false; b.textContent = '📍 Meinen Standort verwenden';
+    toast(err.code === 1 ? 'Standort nicht freigegeben. Gib unten deine PLZ ein.' : 'Standort nicht verfügbar. Gib unten deine PLZ ein.');
+    $('#place-input').focus();
+  }, {enableHighAccuracy: true, timeout: 15000, maximumAge: 60000});
+};
+$('#place-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const q = $('#place-input').value.trim(); if (!q) return;
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=de&accept-language=de&q=${encodeURIComponent(q)}`);
+    const r = await res.json();
+    if (!r.length) { toast('Ort nicht gefunden'); return; }
+    findMarkets({lat: +r[0].lat, lon: +r[0].lon}, r[0].display_name.split(',').slice(0, 2).join(','));
+  } catch (err) { toast('Ortssuche gerade nicht erreichbar'); }
+});
+$('#radius').onchange = () => { if (lastPos) findMarkets(lastPos); };
+
+// ---------- Produkte (Open Food Facts) ----------
+let prodPage = 1, prodQuery = '', prodBusy = false;
+function setProdChain(k){ prodChain = k; store.set('prodChain', k); renderProdChips(); searchProducts(true); }
+function renderProdChips(){
+  const el = $('#prod-chips');
+  el.innerHTML = CHAIN_KEYS.map(k => `<button class="chip" data-k="${k}" aria-pressed="${prodChain === k}">${dot(k)}${CHAINS[k].name}</button>`).join('');
+  el.querySelectorAll('button').forEach(b => b.onclick = () => setProdChain(b.dataset.k));
+  $('#prod-sub').textContent = `Sortiment von ${CHAINS[prodChain].name}`;
+}
+async function offSearch(tag, q, page){
+  const p = new URLSearchParams({
+    action: 'process', json: '1', page_size: '24', page: String(page), sort_by: 'unique_scans_n',
+    tagtype_0: 'stores', tag_contains_0: 'contains', tag_0: tag,
+    tagtype_1: 'countries', tag_contains_1: 'contains', tag_1: 'germany',
+    fields: 'code,product_name,product_name_de,brands,quantity,image_front_small_url,image_small_url,categories_tags',
+  });
+  if (q) { p.set('search_terms', q); p.set('search_simple', '1'); }
+  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 30000);
+  try {
+    const res = await fetch('https://world.openfoodfacts.org/cgi/search.pl?' + p, {signal: ctrl.signal});
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return (await res.json()).products || [];
+  } finally { clearTimeout(t); }
+}
+async function searchProducts(reset){
+  if (prodBusy) return;
+  if (reset) { prodPage = 1; prodQuery = $('#prod-input').value.trim(); $('#prod-grid').innerHTML = ''; }
+  prodBusy = true;
+  const st = $('#prod-status'); st.hidden = false; st.className = 'status';
+  st.textContent = prodQuery ? `Suche „${prodQuery}“ bei ${CHAINS[prodChain].name} …` : `Lade beliebte Produkte von ${CHAINS[prodChain].name} …`;
+  $('#prod-more').hidden = true;
+  try {
+    // Manche Ketten sind unter mehreren Namen erfasst (z.B. Aldi Süd / Aldi Nord)
+    const tags = CHAINS[prodChain].off;
+    const lists = await Promise.all(tags.map(t => offSearch(t, prodQuery, prodPage).catch(() => null)));
+    if (lists.every(l => l === null)) throw new Error('alle Anfragen fehlgeschlagen');
+    const shown = new Set([...document.querySelectorAll('#prod-grid .prod')].map(n => n.dataset.code));
+    const prods = lists.flat().filter(p => p && (p.product_name_de || p.product_name) && !shown.has(p.code) && shown.add(p.code));
+    $('#prod-grid').insertAdjacentHTML('beforeend', prods.map(prodHTML).join(''));
+    const total = document.querySelectorAll('#prod-grid .prod').length;
+    if (!total) st.textContent = prodQuery ? `Nichts gefunden für „${prodQuery}“ bei ${CHAINS[prodChain].name}. Versuch einen allgemeineren Begriff oder füg den Artikel direkt in der Liste hinzu.` : 'Keine Produkte gefunden.';
+    else st.hidden = true;
+    $('#prod-more').hidden = lists.every(l => !l || l.length < 24);
+  } catch (e) {
+    st.className = 'status err';
+    st.textContent = 'Die Produktdatenbank antwortet gerade nicht. Sie ist manchmal überlastet, bitte versuch es in einer Minute nochmal.';
+  }
+  prodBusy = false;
+}
+function prodHTML(p){
+  const name = p.product_name_de || p.product_name;
+  const img = p.image_front_small_url || p.image_small_url;
+  const brand = (p.brands || '').split(',')[0].trim();
+  const inList = items.some(i => !i.done && i.code === p.code);
+  return `<div class="prod" data-code="${esc(p.code)}" data-name="${esc(name)}" data-brand="${esc(brand)}" data-img="${esc(img || '')}" data-cats="${esc((p.categories_tags || []).join(' '))}">
+    <div class="img">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : '<span class="noimg">kein Bild</span>'}</div>
+    <div class="body"><div class="pname">${esc(name)}</div>
+      <div class="brand">${esc([brand, p.quantity].filter(Boolean).join(' · '))}</div>
+      <div class="add"><button class="btn small${inList ? ' added' : ''}">${inList ? '✓ Auf der Liste' : '+ Auf die Liste'}</button></div>
+    </div></div>`;
+}
+function catFromOff(tags, name){
+  const t = tags || '';
+  if (/fruits|vegetables|fresh-foods/.test(t)) return 'Obst & Gemüse';
+  if (/breads|pastries/.test(t)) return 'Brot & Backwaren';
+  if (/dairies|cheeses|yogurts|milks|eggs|butters/.test(t)) return 'Kühlregal';
+  if (/meats|fishes|sausages|hams|seafood/.test(t)) return 'Fleisch & Fisch';
+  if (/frozen/.test(t)) return 'Tiefkühl';
+  if (/beverages|waters|juices|sodas|beers|wines/.test(t)) return 'Getränke';
+  if (/snacks|sweets|chocolates|biscuits|confectioneries|chips/.test(t)) return 'Süßes & Snacks';
+  if (/cereals|pastas|rices|condiments|sauces|spreads|canned|flours|sugars|oils|coffees|teas/.test(t)) return 'Vorrat';
+  return guessCat(name);
+}
+$('#prod-grid').addEventListener('click', e => {
+  const btn = e.target.closest('.add .btn'); if (!btn) return;
+  const card = btn.closest('.prod'), d = card.dataset;
+  const existing = items.find(i => !i.done && i.code === d.code);
+  if (existing) { existing.qty++; save(); renderList(); toast(`${d.name}: jetzt ${existing.qty}×`); return; }
+  items.push({id: uid(), code: d.code, name: d.name, brand: d.brand || null, img: d.img || null, qty: 1, done: false, cat: catFromOff(d.cats, d.name), chain: prodChain, added: Date.now()});
+  save(); renderList();
+  btn.classList.add('added'); btn.textContent = '✓ Auf der Liste';
+  toast(`${d.name} hinzugefügt`);
+});
+$('#prod-form').addEventListener('submit', e => { e.preventDefault(); $('#prod-input').blur(); searchProducts(true); });
+$('#prod-more').onclick = () => { prodPage++; searchProducts(false); };
+
+// ---------- Start ----------
+renderListChips(); renderList();
+const startTab = store.get('tab', 'liste');
+showTab(['liste','maerkte','produkte'].includes(startTab) ? startTab : 'liste');
+if (startTab === 'produkte') searchProducts(true);
+document.querySelector('nav [data-tab="produkte"]').addEventListener('click', () => { if (!$('#prod-grid').children.length && !prodBusy) searchProducts(true); });
+// Stammmarkt gemerkt: Märkte gleich um ihn herum laden, wenn der Tab geöffnet wird
+document.querySelector('nav [data-tab="maerkte"]').addEventListener('click', () => { if (!markets.length && favMarket && !lastPos) findMarkets({lat: favMarket.lat, lon: favMarket.lon}, favMarket.name); });
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
