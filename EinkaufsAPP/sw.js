@@ -1,5 +1,5 @@
 // Offline-Cache für die Einkaufsliste. Märkte und Produkte kommen live aus dem Netz.
-const VERSION = 'einkauf-v1';
+const VERSION = 'einkauf-v2';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
