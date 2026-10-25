@@ -184,7 +184,7 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .check input:checked+span{color:var(--muted);text-decoration:line-through}
 
 /* Tabs */
-.tabs{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(11,12,13,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding-block:6px calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(11,12,13,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding-block:6px calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
 .tabs button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;font-size:11px;font-weight:600;color:var(--faint);cursor:pointer}
 .tabs svg{width:24px;height:24px}
 .tabs button[aria-selected="true"]{color:var(--ink)}
@@ -288,6 +288,38 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .big .de{color:#5E646A;font-size:15px}
 .big .py{color:#5E646A;font-size:18px;font-style:italic}
 .big .x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:calc(14px + env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:0;background:#E2E4E6;color:#0B0C0D;font-size:24px;cursor:pointer}
+/* Tagebuch */
+.tb-list{display:flex;flex-direction:column;gap:8px}
+.tb-day{display:grid;grid-template-columns:50px 1fr auto;align-items:center;gap:0 12px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;cursor:pointer;min-height:62px}
+.tb-day:active{background:var(--panel-2)}
+.tb-day .d{display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.tb-day .d small{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.tb-day .d b{font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.tb-day.today .d b{color:var(--green)}
+.tb-day .mid{min-width:0}
+.tb-day .st{display:block;font-weight:600;font-size:15px;line-height:1.3}
+.tb-day .ex{display:block;font-size:13px;color:var(--muted);line-height:1.3;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-day .ex.none{color:var(--faint)}
+.tb-day .th{display:flex;margin-top:8px;gap:4px}
+.tb-day .th img{width:40px;height:40px;object-fit:cover;border-radius:3px;display:block;background:var(--panel-2)}
+.tb-day .th span{width:40px;height:40px;border-radius:3px;background:var(--panel-2);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--muted)}
+.tb-text{font:inherit;font-size:16px;line-height:1.5;color:var(--ink);background:var(--bg);border:1px solid var(--line-2);border-radius:4px;padding:12px;width:100%;min-height:180px;resize:vertical}
+.tb-saved{font-size:12px;color:var(--muted);min-height:16px}
+.tb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tb-grid button{border:0;padding:0;background:var(--panel-2);border-radius:4px;overflow:hidden;aspect-ratio:1;cursor:pointer;display:block}
+.tb-grid img{width:100%;height:100%;object-fit:cover;display:block}
+.tb-add{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tb-add label{cursor:pointer}
+.tb-add input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.tb-busy{font-size:13px;color:var(--amber)}
+.tb-photo{position:fixed;inset:0;z-index:40;background:#000;display:flex;flex-direction:column}
+.tb-photo .bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) 10px max(14px,env(safe-area-inset-left,0px))}
+.tb-photo .pic{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative}
+.tb-photo .pic img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.tb-photo .nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(32,35,38,.8);color:var(--ink);font-size:22px;cursor:pointer}
+.tb-photo .nav.p{left:10px} .tb-photo .nav.n{right:10px}
+.tb-photo .cnt{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tb-photo .foot{display:flex;justify-content:center;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -405,6 +437,20 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
     <p class="note">Stand Oktober 2026. Einreiseregeln kurz vor Abflug beim Auswärtigen Amt prüfen.</p>
   </section>
  </div>
+ <div class="view" id="v-tagebuch" hidden>
+  <div id="tb-home" style="display:flex;flex-direction:column;gap:22px">
+   <h2 class="vh">Tagebuch</h2>
+   <p class="lead">Text und Fotos zu jedem Reisetag.</p>
+   <div class="tb-list" id="tbList"></div>
+   <section class="card">
+     <h3>Sicherung</h3>
+     <p class="note" style="margin:0">Das Tagebuch liegt nur auf diesem Gerät. Exportiere ab und zu ein Backup, z. B. in „Dateien“ oder iCloud Drive. Damit stellst du alles auf einem neuen Gerät wieder her.</p>
+     <div class="btns"><button class="btn primary" type="button" id="tbExport">Backup exportieren</button><label class="btn" for="tbImport">Wiederherstellen</label><input id="tbImport" type="file" accept=".json,application/json" hidden></div>
+     <div class="note" id="tbInfo"></div>
+   </section>
+  </div>
+  <div id="tb-edit" hidden style="display:flex;flex-direction:column;gap:14px"></div>
+ </div>
 </div>
 
 <nav class="tabs" role="tablist" aria-label="Bereiche">
@@ -412,6 +458,7 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
   <button role="tab" id="tab-ausfluege" data-tab="ausfluege" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h20M4 20l5-9 4 6 3-4 4 7"/><circle cx="16" cy="6" r="2"/></svg>Entdecken</button>
   <button role="tab" id="tab-ausgaben" data-tab="ausgaben" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l5 7 5-7M6 11h12M6 15h12M12 11v9"/></svg>Ausgaben</button>
   <button role="tab" id="tab-hilfe" data-tab="hilfe" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>Hilfe</button>
+  <button role="tab" id="tab-tagebuch" data-tab="tagebuch" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v14H8a3 3 0 0 1-3-3z"/><path d="M5 18a3 3 0 0 1 3-3h11M9 8h6"/></svg>Tagebuch</button>
 </nav>
 <div class="scrim" id="scrim"></div>
 <aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh-title" aria-hidden="true"></aside>
@@ -963,7 +1010,7 @@ function convNote(){document.getElementById('cvNote').textContent=`Kurs 1 € = 
 document.getElementById('cvY').addEventListener('input',e=>{const v=num(e.target.value);document.getElementById('cvE').value=v>=0?fmt2(v/rate):''});
 document.getElementById('cvE').addEventListener('input',e=>{const v=num(e.target.value);document.getElementById('cvY').value=v>=0?fmt2(v*rate):''});
 /* ===== Navigation ===== */
-const TABS=['reise','ausfluege','ausgaben','hilfe'];
+const TABS=['reise','ausfluege','ausgaben','hilfe','tagebuch'];
 function showTab(t){if(!TABS.includes(t))t='reise';TABS.forEach(x=>{document.getElementById('v-'+x).hidden=x!==t;document.getElementById('tab-'+x).setAttribute('aria-selected',x===t)});window.scrollTo(0,0)}
 function showSeg(k){['taxi','saetze','packen','infos'].forEach(x=>{document.getElementById('h-'+x).hidden=x!==k;document.querySelector(`[data-seg="${x}"]`).setAttribute('aria-pressed',x===k)})}
 
@@ -1004,6 +1051,145 @@ document.addEventListener('change',e=>{const t=e.target;
 renderReise();renderEx();renderFood();renderPack();convNote();renderTaxiList();renderPhrases();renderInfos();initExp();renderExp();showSeg('taxi');
 setInterval(()=>{renderTop();renderHero()},30000);
 const h0=(location.hash||'').slice(1);showTab(TABS.includes(h0)?h0:'reise');
+</script>
+<script>
+/* ===== Tagebuch: Einträge und Fotos nur auf diesem Gerät (IndexedDB) ===== */
+(()=>{
+const DB_NAME='cr-tagebuch',FULL=1600,THUMB=320;
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let dbp=null;
+function db(){return dbp||(dbp=new Promise((ok,no)=>{const r=indexedDB.open(DB_NAME,1);
+  r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('days'))d.createObjectStore('days',{keyPath:'date'});if(!d.objectStoreNames.contains('photos')){const s=d.createObjectStore('photos',{keyPath:'id'});s.createIndex('date','date')}};
+  r.onsuccess=()=>ok(r.result);r.onerror=()=>{dbp=null;no(r.error)}}))}
+const req=r=>new Promise((ok,no)=>{r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+async function tx(stores,mode,fn){const d=await db();const t=d.transaction(stores,mode);const out=fn(t);await new Promise((ok,no)=>{t.oncomplete=ok;t.onerror=()=>no(t.error);t.onabort=()=>no(t.error||new Error('abgebrochen'))});return out instanceof Promise?out:out}
+const getAll=s=>tx([s],'readonly',t=>req(t.objectStore(s).getAll()));
+const getDay=iso=>tx(['days'],'readonly',t=>req(t.objectStore('days').get(iso)));
+const putDay=day=>tx(['days'],'readwrite',t=>{t.objectStore('days').put(day)});
+const photosOf=iso=>tx(['photos'],'readonly',t=>req(t.objectStore('photos').index('date').getAll(iso))).then(a=>a.sort((x,y)=>x.created-y.created));
+
+/* Station je Tag aus dem Reiseplan */
+function station(iso){
+  const i=DAYS.indexOf(iso);const n=p=>p&&p!=='im Flugzeug'?p:null;
+  const cur=n(nightIn(iso)),prev=i>0?n(nightIn(DAYS[i-1])):null;
+  if(iso===DAYS[0])return 'Frankfurt → Shanghai';
+  if(!cur)return (prev||'Shanghai')+' → Frankfurt';
+  return prev&&prev!==cur?prev+' → '+cur:cur;
+}
+
+/* Fotos verkleinern */
+function loadImg(file){return new Promise((ok,no)=>{const u=URL.createObjectURL(file);const im=new Image();im.onload=()=>ok({im,u});im.onerror=()=>{URL.revokeObjectURL(u);no(new Error('Bild lässt sich nicht lesen'))};im.src=u})}
+function scale(im,max,q){const w0=im.naturalWidth,h0=im.naturalHeight,f=Math.min(1,max/Math.max(w0,h0));const w=Math.max(1,Math.round(w0*f)),h=Math.max(1,Math.round(h0*f));
+  const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);
+  return new Promise((ok,no)=>c.toBlob(b=>b?ok({b,w,h}):no(new Error('Bild konnte nicht verkleinert werden')),'image/jpeg',q))}
+async function shrink(file){const {im,u}=await loadImg(file);try{const full=await scale(im,FULL,.82);const th=await scale(im,THUMB,.7);return{blob:full.b,thumb:th.b,w:full.w,h:full.h}}finally{URL.revokeObjectURL(u)}}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+/* Objekt-URLs der aktuell gezeigten Bilder aufräumen */
+let urls=[];const url=b=>{const u=URL.createObjectURL(b);urls.push(u);return u};const freeUrls=()=>{urls.forEach(u=>URL.revokeObjectURL(u));urls=[]};
+
+const home=document.getElementById('tb-home'),edit=document.getElementById('tb-edit'),list=document.getElementById('tbList'),info=document.getElementById('tbInfo');
+let cur=null,photos=[],saveT=null,viewer=null,delArmTb=null;
+
+async function renderList(){
+  freeUrls();
+  let days=[],ph=[];try{[days,ph]=await Promise.all([getAll('days'),getAll('photos')])}catch(e){list.innerHTML=`<div class="card empty">Das Tagebuch kann auf diesem Gerät nicht gespeichert werden (${esc(e.message)}). Im privaten Modus von Safari geht das nicht.</div>`;return}
+  const byDay=Object.fromEntries(days.map(d=>[d.date,d]));const today=cnNow().date;
+  list.innerHTML=DAYS.map(iso=>{const f=fmtDay(iso),d=byDay[iso],p=ph.filter(x=>x.date===iso).sort((a,b)=>a.created-b.created);
+    const txt=(d&&d.text||'').trim();const th=p.slice(0,5).map(x=>`<img alt="" src="${url(x.thumb)}">`).join('')+(p.length>5?`<span>+${p.length-5}</span>`:'');
+    return `<button class="tb-day${iso===today?' today':''}" data-tbday="${iso}"><span class="d"><small>${esc(f.wd)}</small><b>${f.dn}</b></span><span class="mid"><span class="st">${esc(station(iso))}${iso===today?'<span class="tag ok">Heute</span>':''}</span><span class="ex${txt?'':' none'}">${txt?esc(txt.split('\n')[0]):(p.length?p.length+(p.length>1?' Fotos':' Foto'):'Noch kein Eintrag')}</span>${th?`<span class="th">${th}</span>`:''}</span><span class="chev">›</span></button>`}).join('');
+  const n=days.filter(d=>(d.text||'').trim()).length;
+  let s=`${n} von ${DAYS.length} Tagen mit Text · ${ph.length} ${ph.length===1?'Foto':'Fotos'}`;
+  try{if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate();if(e.usage!=null)s+=` · belegt ca. ${(e.usage/1048576).toFixed(1).replace('.',',')} MB`}}catch(e){}
+  info.textContent=s;
+}
+
+async function openDay(iso){
+  cur=iso;delArmTb=null;const d=await getDay(iso).catch(()=>null);photos=await photosOf(iso).catch(()=>[]);
+  const i=DAYS.indexOf(iso),f=fmtDay(iso);freeUrls();
+  edit.innerHTML=`<div class="daynav"><button class="btn ghost" data-tbback>‹ Alle Tage</button></div>
+   <div class="stepper"><button data-tbday="${DAYS[i-1]||''}" ${i?'':'disabled'} aria-label="Vorheriger Tag">‹</button><div class="c">${esc(f.long)}<small>${esc(station(iso))}</small></div><button data-tbday="${DAYS[i+1]||''}" ${i<DAYS.length-1?'':'disabled'} aria-label="Nächster Tag">›</button></div>
+   <section class="card"><h3><label for="tbText">Was war heute?</label></h3><textarea class="tb-text" id="tbText" placeholder="Erlebnisse, Essen, Begegnungen …">${esc(d&&d.text||'')}</textarea><div class="tb-saved" id="tbSaved">${d&&d.updated?'Gespeichert '+new Date(d.updated).toLocaleString('de-DE',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'}):''}</div></section>
+   <section class="card"><h3>Fotos</h3><div class="tb-grid" id="tbGrid"></div>
+    <div class="tb-add"><label class="btn primary" for="tbCam">Kamera<input id="tbCam" type="file" accept="image/*" capture="environment"></label><label class="btn" for="tbLib">Mediathek<input id="tbLib" type="file" accept="image/*" multiple></label></div>
+    <div class="tb-busy" id="tbBusy" hidden></div>
+    <p class="note" style="margin:0">Fotos werden verkleinert gespeichert. Die Originale bleiben in deiner Mediathek.</p></section>`;
+  renderGrid();home.hidden=true;edit.hidden=false;window.scrollTo(0,0);
+}
+function renderGrid(){const g=document.getElementById('tbGrid');if(!g)return;g.innerHTML=photos.length?photos.map((p,k)=>`<button data-tbph="${k}" aria-label="Foto ${k+1} öffnen"><img alt="" src="${url(p.thumb)}"></button>`).join(''):'';g.hidden=!photos.length}
+
+async function saveText(){if(!cur)return;const el=document.getElementById('tbText');if(!el)return;clearTimeout(saveT);saveT=null;
+  const day={date:cur,text:el.value,updated:Date.now()};try{await putDay(day);const s=document.getElementById('tbSaved');if(s)s.textContent='Gespeichert'}catch(e){const s=document.getElementById('tbSaved');if(s)s.textContent='Speichern fehlgeschlagen: '+e.message}}
+
+async function addFiles(files){
+  files=[...files].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));if(!files.length)return;
+  const busy=document.getElementById('tbBusy'),iso=cur;let k=0,bad=0;busy.hidden=false;
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
+  for(const f of files){k++;busy.textContent=`Foto ${k} von ${files.length} wird gespeichert …`;
+    try{const r=await shrink(f);const p={id:uid(),date:iso,created:Date.now()+k,w:r.w,h:r.h,blob:r.blob,thumb:r.thumb};
+      await tx(['photos'],'readwrite',t=>{t.objectStore('photos').put(p)});if(cur===iso){photos.push(p);renderGrid()}}catch(e){bad++}}
+  busy.textContent=bad?`${bad} ${bad>1?'Fotos konnten':'Foto konnte'} nicht gespeichert werden.`:'';busy.hidden=!bad;
+}
+
+/* Großansicht */
+function showPhoto(k){
+  if(!viewer){viewer=document.createElement('div');viewer.className='tb-photo';viewer.setAttribute('role','dialog');viewer.setAttribute('aria-modal','true');viewer.setAttribute('aria-label','Foto');document.body.appendChild(viewer)}
+  const p=photos[k];if(!p){closePhoto();return}delArmTb=null;
+  if(viewer._u)URL.revokeObjectURL(viewer._u);viewer._u=URL.createObjectURL(p.blob);
+  viewer.innerHTML=`<div class="bar"><span class="cnt">${k+1} / ${photos.length}</span><button class="close" data-tbclose aria-label="Schließen">×</button></div>
+   <div class="pic"><img alt="" src="${viewer._u}">${k>0?`<button class="nav p" data-tbph="${k-1}" aria-label="Vorheriges Foto">‹</button>`:''}${k<photos.length-1?`<button class="nav n" data-tbph="${k+1}" aria-label="Nächstes Foto">›</button>`:''}</div>
+   <div class="foot"><button class="del" data-tbdel="${k}">Foto löschen</button></div>`;
+  viewer.hidden=false;
+}
+function closePhoto(){if(viewer){viewer.hidden=true;if(viewer._u){URL.revokeObjectURL(viewer._u);viewer._u=null}}}
+
+/* Backup */
+const b64=blob=>new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=()=>no(r.error);r.readAsDataURL(blob)});
+const unb64=async s=>(await fetch(s)).blob();
+async function exportAll(){
+  const btn=document.getElementById('tbExport'),t0=btn.textContent;btn.disabled=true;btn.textContent='Backup wird erstellt …';
+  try{const [days,ph]=await Promise.all([getAll('days'),getAll('photos')]);
+    const out={app:'china-reise-tagebuch',version:1,exported:new Date().toISOString(),days,photos:[]};
+    for(const p of ph)out.photos.push({id:p.id,date:p.date,created:p.created,w:p.w,h:p.h,data:await b64(p.blob)});
+    const name=`china-tagebuch-${new Date().toISOString().slice(0,10)}.json`;
+    const file=new File([JSON.stringify(out)],name,{type:'application/json'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'China-Tagebuch'});return}catch(e){if(e&&e.name==='AbortError')return}}
+    const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+  }catch(e){alert('Backup fehlgeschlagen: '+e.message)}
+  finally{btn.disabled=false;btn.textContent=t0}
+}
+async function importFile(f){
+  let data;try{data=JSON.parse(await f.text())}catch(e){alert('Diese Datei ist kein Tagebuch-Backup.');return}
+  if(!data||data.app!=='china-reise-tagebuch'||!Array.isArray(data.days)||!Array.isArray(data.photos)){alert('Diese Datei ist kein Tagebuch-Backup.');return}
+  if(!confirm(`Backup vom ${new Date(data.exported).toLocaleString('de-DE')} wiederherstellen?\n\n${data.days.length} Tage, ${data.photos.length} Fotos. Das ersetzt das Tagebuch auf diesem Gerät.`))return;
+  info.textContent='Wird wiederhergestellt …';
+  try{const ph=[];for(const p of data.photos){const blob=await unb64(p.data);const {im,u}=await loadImg(blob);let th;try{th=await scale(im,THUMB,.7)}finally{URL.revokeObjectURL(u)}ph.push({id:p.id,date:p.date,created:p.created,w:p.w,h:p.h,blob,thumb:th.b})}
+    await tx(['days','photos'],'readwrite',t=>{const ds=t.objectStore('days'),ps=t.objectStore('photos');ds.clear();ps.clear();data.days.forEach(d=>d&&d.date&&ds.put({date:d.date,text:String(d.text||''),updated:d.updated||Date.now()}));ph.forEach(p=>ps.put(p))});
+    await renderList();alert('Tagebuch wiederhergestellt.');
+  }catch(e){alert('Wiederherstellen fehlgeschlagen: '+e.message);renderList()}
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-tbday],[data-tbback],[data-tbph],[data-tbclose],[data-tbdel],#tbExport');if(!b)return;const d=b.dataset;
+  if(d.tbday!==undefined){if(!d.tbday)return;saveText();openDay(d.tbday)}
+  else if(b.hasAttribute('data-tbback')){saveText().then(()=>{cur=null;edit.hidden=true;home.hidden=false;renderList();window.scrollTo(0,0)})}
+  else if(d.tbph!==undefined)showPhoto(+d.tbph);
+  else if(b.hasAttribute('data-tbclose'))closePhoto();
+  else if(d.tbdel!==undefined){const k=+d.tbdel;if(delArmTb!==k){delArmTb=k;b.classList.add('confirm');b.textContent='Wirklich löschen?';return}
+    const p=photos[k];tx(['photos'],'readwrite',t=>{t.objectStore('photos').delete(p.id)}).then(()=>{photos.splice(k,1);renderGrid();photos.length?showPhoto(Math.min(k,photos.length-1)):closePhoto()}).catch(err=>alert('Löschen fehlgeschlagen: '+err.message))}
+  else if(b.id==='tbExport')exportAll();
+});
+document.addEventListener('input',e=>{if(e.target.id==='tbText'){const s=document.getElementById('tbSaved');if(s)s.textContent='…';clearTimeout(saveT);saveT=setTimeout(saveText,600)}});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.id==='tbCam'||t.id==='tbLib'){const fs=[...t.files];t.value='';addFiles(fs)}
+  else if(t.id==='tbImport'){const f=t.files[0];t.value='';if(f)importFile(f)}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&viewer&&!viewer.hidden){e.stopImmediatePropagation();closePhoto()}},true);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveT)saveText()});
+window.addEventListener('pagehide',()=>{if(saveT)saveText()});
+/* Beim Wechsel auf den Tab die Liste frisch zeigen */
+document.getElementById('tab-tagebuch').addEventListener('click',()=>{if(saveT)saveText();cur=null;edit.hidden=true;home.hidden=false;renderList()});
+renderList();
+})();
 </script>
 
 <script>
