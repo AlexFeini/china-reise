@@ -98,7 +98,7 @@ DTSTAMP:20261023T173651Z
 DTSTART:20261116T064500Z
 DTEND:20261116T074500Z
 SUMMARY:Guilin → Yangshuo
-DESCRIPTION:ca. 1–1\,5 h\nZiel: The Blossom Dreamscape Boutique Hotel
+DESCRIPTION:ca. 1–1\,5 h\nZiel: Huamengjian Hotel (Jima)
 LOCATION:Flughafen Guilin
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -112,7 +112,7 @@ DTSTAMP:20261023T173651Z
 DTSTART:20261116T083000Z
 DTEND:20261116T090000Z
 SUMMARY:Ankunft · Hotel am Yulong River
-DESCRIPTION:Check-in ab 14:00 · 3 Nächte · Frühstück
+DESCRIPTION:Check-in ab 14:00 · 3 Nächte
 LOCATION:Hotel am Yulong River
 END:VEVENT
 BEGIN:VEVENT
@@ -136,7 +136,7 @@ DTSTART:20261119T043000Z
 DTEND:20261119T053000Z
 SUMMARY:Hotel → Bahnhof Guilin Nord
 DESCRIPTION:ca. 1\,5 h · Taxi / DiDi\nZiel: Bahnhof Guilin Nord
-LOCATION:The Blossom Dreamscape Boutique Hotel
+LOCATION:Huamengjian Hotel (Jima)
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:Hotel → Bahnhof Guilin Nord
