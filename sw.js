@@ -1,5 +1,5 @@
 // Offline-Cache für die China-Reise-App
-const VERSION = 'china-reise-v8';
+const VERSION = 'china-reise-v9';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
