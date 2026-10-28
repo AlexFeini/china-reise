@@ -1,0 +1,86 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//China Reise 2026//DE
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:China Reise 2026
+BEGIN:VEVENT
+UID:cr26-b0-1530@alexfeini.github.io
+DTSTAMP:20261028T175411Z
+DTSTART:20261114T073000Z
+DTEND:20261114T083000Z
+SUMMARY:Besorgungen: Schirm\, Adapter\, Jacke\, Hose
+DESCRIPTION:Nanjing Road · zu Fuß vom Hotel\nNach dem Check-in kaufen: Regenschirm\, Steckdosen-Adapter\, Jacke und Hose. Alles liegt auf dem Weg vom Hotel über den Bund zur Nanjing Road – gut mit dem ersten Abend am Bund zu verbinden.
+LOCATION:Nanjing Road (Fußgängerzone)
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Besorgungen: Schirm\, Adapter\, Jacke\, Hose
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cr26-a5-0730@alexfeini.github.io
+DTSTAMP:20261028T175411Z
+DTSTART:20261119T233000Z
+DTEND:20261120T003000Z
+SUMMARY:Tianmen Mountain · 999 Stufen
+DESCRIPTION:Shuttlebus zum Bergtor\, Linie C · ca. 5–6 h
+LOCATION:Tianmen Mountain 天门山
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Tianmen Mountain · 999 Stufen
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cr26-a5-1630@alexfeini.github.io
+DTSTAMP:20261028T175411Z
+DTSTART:20261120T083000Z
+DTEND:20261120T093000Z
+SUMMARY:Furong Town am Abend
+DESCRIPTION:Zug ab Zhangjiajie West\, ca. 23 Min. · Lichter am Abend
+LOCATION:Furong Town 芙蓉镇
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Furong Town am Abend
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cr26-a6-0730@alexfeini.github.io
+DTSTAMP:20261028T175411Z
+DTSTART:20261120T233000Z
+DTEND:20261121T003000Z
+SUMMARY:Grand Canyon & Glasbrücke
+DESCRIPTION:ca. 1\,5 h Anfahrt · 3–4 h vor Ort
+LOCATION:Grand Canyon & Glasbrücke 张家界大峡谷玻璃桥
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Grand Canyon & Glasbrücke
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cr26-a6-1400@alexfeini.github.io
+DTSTAMP:20261028T175411Z
+DTSTART:20261121T060000Z
+DTEND:20261121T070000Z
+SUMMARY:Helikopterflug Wulingyuan
+DESCRIPTION:ca. 45 Min. vom Canyon · nur bei klarem Wetter
+LOCATION:Helikopterflug Wulingyuan 张家界直升机观光
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Helikopterflug Wulingyuan
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:cr26-b1-tag@alexfeini.github.io
+DTSTAMP:20261028T175411Z
+DTSTART;VALUE=DATE:20261123
+DTEND;VALUE=DATE:20261125
+SUMMARY:Drohne nach Shanghai schicken
+DESCRIPTION:Am 23. oder 24.11. aus Chongqing\nDrohne + Akkus am 23. oder 24.11. an das Flughafenhotel in Pudong schicken (Adresse unten).
+LOCATION:Chongqing
+END:VEVENT
+END:VCALENDAR
