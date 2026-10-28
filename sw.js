@@ -1,8 +1,19 @@
 // Offline-Cache für die China-Reise-App
-const VERSION = 'china-reise-v9';
+const VERSION = 'china-reise-v10';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then(async c => {
+    await c.addAll(SHELL);
+    // Ausflug-Bilder gleich mitspeichern, damit sie in China offline da sind
+    try {
+      const res = await fetch('img/credits.json', {cache: 'no-store'});
+      if (res.ok) {
+        await c.put('img/credits.json', res.clone());
+        const list = Object.values(await res.json()).map(x => x.f);
+        await Promise.all(list.map(f => c.add(f).catch(() => {})));
+      }
+    } catch (err) {}
+  }).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));
