@@ -487,6 +487,14 @@ const D=[
   notes:['Preis beinhaltet Hin- und Rückflug Frankfurt ⇄ Shanghai.','Online-Check-in geht nicht über Gotogate, sondern bei Air China mit dem Airline-Code aus der Gotogate-App.','Vom Flughafen Pudong zum Hotel am Bund rechne mit gut 1 h (Taxi oder Metro Linie 2).','Ankunft am 14.11. mittags – Check-in im Hotel ab 12:00.']},
  {id:'w1',date:'2026-11-14',type:'car',way:1,title:'Flughafen → Hotel am Bund',from:'Flughafen Pudong (PVG)',to:'Shanghai Bund South China Harbour View Hotel',dep:'13:30',dur:'ca. 1 h',goZh:'上海外滩中南海滨酒店(海湾大厦)',goAddr:'上海市虹口区黄浦路53号',tips:['Nach Einreise und Gepäck realistisch gegen 13:30 los.','Taxi am offiziellen Taxistand oder DiDi – keine Fahrer annehmen, die dich in der Halle ansprechen.','Alternative: Metro Linie 2 bis East Nanjing Road (ca. 75 Min.), dann ca. 15 Min. zu Fuß.']},
  {id:'a1',date:'2026-11-14',type:'free',title:'Ankommen & Freizeit',place:'Shanghai'},
+ {id:'b0',date:'2026-11-14',type:'box',title:'Besorgungen: Schirm, Adapter, Jacke, Hose',when:'Nanjing Road · zu Fuß vom Hotel',dep:'15:30',dur:'15–20 Min. zu Fuß',from:'Hotel am Bund',to:'Nanjing Road (Fußgängerzone)',status:'todo',
+  addr:'Nanjing Road East pedestrian street, Huangpu, Shanghai',zh:'南京东路步行街',
+  todo:'Nach dem Check-in kaufen: Regenschirm, Steckdosen-Adapter, Jacke und Hose. Alles liegt auf dem Weg vom Hotel über den Bund zur Nanjing Road – gut mit dem ersten Abend am Bund zu verbinden.',
+  notes:['<b>Regenschirm</b> (雨伞 yǔsǎn): in jedem Convenience Store – FamilyMart (全家), Lawson (罗森), 7-Eleven. Kostet meist 20–50 ¥. Gibt es auch auf dem Weg zum Bund.',
+   '<b>Steckdosen-Adapter</b> (转换插头 zhuǎnhuàn chātóu): zuerst an der Hotel-Rezeption fragen, viele Hotels verleihen Adapter gratis. Sonst in der Elektronik-Abteilung eines Kaufhauses oder Supermarkts. Du brauchst Typ A (zwei flache Stifte) oder Typ I (drei schräge Stifte). Flache Euro-Stecker (Handy-Ladegerät) passen oft direkt in die kombinierten Hotel-Steckdosen, Schuko-Stecker nie.',
+   '<b>Jacke & Hose</b>: auf der Nanjing Road East gibt es große Modeläden wie Uniqlo, H&amp;M und Zara. Uniqlo hat europäische Größen (S–XXL) und günstige Basics, z. B. eine leichte Daunenjacke. Für Outdoor-Kleidung (Regenjacke, Wanderhose für Zhangjiajie) ist Decathlon (迪卡侬) günstig.',
+   'Den nächsten Laden findest du in Amap oder Apple Karten mit der Suche nach 优衣库 (Uniqlo), 迪卡侬 (Decathlon) oder 全家 (FamilyMart).'],
+  tips:['Größen in China fallen kleiner aus – Kleidung lieber anprobieren und eine Nummer größer nehmen.','Bezahlen geht überall mit Alipay, die Sätze dazu stehen unter Hilfe › Sätze › Einkaufen.','Mitte November ist es in Shanghai ca. 10–17 °C und oft feucht – eine wasserdichte Jacke hilft auch später in Yangshuo und Zhangjiajie.']},
  {id:'h1',date:'2026-11-14',end:'2026-11-16',type:'hotel',title:'Shanghai Bund South China Harbour View Hotel',hotelZh:'上海外滩中南海滨酒店(海湾大厦)',place:'Shanghai',ci:'12:00–23:59',co:'bis 12:00',nights:2,room:'Einzelzimmer mit Stadtblick',breakfast:true,platform:'Booking',phone:'+86 21 5666 0808',status:'ok',price:214.75,shot:true,
   addr:'No. 53 Huangpu Road, Hongkou, Shanghai 200080',zh:'上海市虹口区黄浦路53号',
   cancel:'Kostenlos stornierbar bis 9. Nov. 2026, 23:59 – danach fallen Gebühren an.',notes:['Liegt am nördlichen Ende des Bund – zu Fuß zum Bund und zur Nanjing Road.','Bei Check-in die Check-in-Nummer bereithalten.']},
@@ -571,7 +579,7 @@ function rowsFor(iso){
   D.filter(x=>x.date===iso).forEach(it=>{
     if(it.type==='hotel')rows.push({it,time:CIAT[it.id]||pad(times(it.ci)[0]),title:'Ankunft · '+short(it),sub:`Check-in ${it.ci} · ${it.nights} ${it.nights>1?'Nächte':'Nacht'}${it.breakfast?' · Frühstück':''}`});
     else if(it.type==='free'){if(it.exLink)rows.push({it,time:'09:30',title:'Chinesische Mauer Mutianyu',sub:'Seilbahn, ggf. Rodelbahn · zurück bis 15:30',ex:it.exLink});else if(it.steps)it.steps.forEach(st=>rows.push({it,time:st.time,title:st.title,sub:st.sub,ex:st.ex}));else free.push(it)}
-    else if(it.type==='box')rows.push({it,time:null,title:it.title,sub:it.when||''});
+    else if(it.type==='box')rows.push({it,time:pad(it.dep)||null,title:it.title,sub:it.when||''});
     else if(it.type==='car')rows.push({it,time:pad(it.dep)||null,title:it.title,sub:[it.dur,it.way?'Taxi / DiDi':''].filter(Boolean).join(' · ')});
     else{const no=(it.airline||'').split(' · ')[0].replace(/^(Air China|China Southern|Juneyao Airlines)\s*/,'')||it.trainNo||'';
       rows.push({it,time:pad(it.dep),tz:it.tz,title:(it.type==='flight'?'Flug ':'Zug ')+it.title,sub:[it.arr?'an '+it.arr+(it.arrNote?' (+1)':''):'',it.dur,no].filter(Boolean).join(' · ')})}
@@ -743,6 +751,13 @@ const PH=[
  ['Bezahlen','Das ist zu teuer. Geht es günstiger?','太贵了，能便宜一点吗？','tài guì le, néng piányi yìdiǎn ma?'],
  ['Bezahlen','Kann ich mit Alipay bezahlen?','可以用支付宝吗？','kěyǐ yòng zhīfùbǎo ma?'],
  ['Bezahlen','Kann ich mit Karte bezahlen?','可以刷卡吗？','kěyǐ shuā kǎ ma?'],
+ ['Einkaufen','Wo kann ich einen Regenschirm kaufen?','哪里可以买雨伞？','nǎlǐ kěyǐ mǎi yǔsǎn?'],
+ ['Einkaufen','Haben Sie einen Steckdosen-Adapter?','有转换插头吗？','yǒu zhuǎnhuàn chātóu ma?'],
+ ['Einkaufen','(Ans Hotel) Kann ich einen Adapter ausleihen?','可以借一个转换插头吗？','kěyǐ jiè yí ge zhuǎnhuàn chātóu ma?'],
+ ['Einkaufen','Ich suche eine Jacke und eine Hose.','我想买一件外套和一条裤子。','wǒ xiǎng mǎi yí jiàn wàitào hé yì tiáo kùzi'],
+ ['Einkaufen','Haben Sie das eine Nummer größer?','有大一号的吗？','yǒu dà yí hào de ma?'],
+ ['Einkaufen','Kann ich das anprobieren?','可以试穿吗？','kěyǐ shìchuān ma?'],
+ ['Einkaufen','Wo ist die Umkleidekabine?','试衣间在哪里？','shìyījiān zài nǎlǐ?'],
  ['Hotel','Ich habe eine Reservierung.','我有预订。','wǒ yǒu yùdìng'],
  ['Hotel','Ich komme spät an, nach 22 Uhr.','我会晚到，大概晚上十点以后。','wǒ huì wǎn dào, dàgài wǎnshang shí diǎn yǐhòu'],
  ['Hotel','Kann ich mein Gepäck hier lassen?','可以寄存行李吗？','kěyǐ jìcún xíngli ma?'],
