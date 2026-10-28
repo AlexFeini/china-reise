@@ -216,6 +216,12 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 /* Ausflüge */
 .exc{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
 .exc:first-of-type{border-top:0}
+.exc.hasimg{grid-template-columns:64px 1fr auto}
+.exc .tb{background:none;border:0;padding:0;cursor:pointer}
+.exc .tb img{width:64px;height:64px;border-radius:6px;object-fit:cover;display:block;background:var(--line)}
+.shimg{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:8px;margin:10px 0 4px;display:block;background:var(--line)}
+.credit{font-size:11px;color:var(--muted);margin:0 0 6px}
+.credit a{color:inherit}
 .exc .open{background:none;border:0;padding:0;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
 .exc .t{font-weight:600;font-size:16px}
 .exc .z{font-family:var(--f-zh);font-size:14px;color:var(--muted)}
@@ -862,6 +868,9 @@ const CITY=[
  ['Chongqing','22.–25.11. · 2,5 Tage','Dein Hotel liegt in Guanyinqiao. Die meisten Sehenswürdigkeiten sind in Yuzhong, ca. 20–30 Min. mit Taxi oder Metro.'],
  ['Beijing','25.–26.11. · 1 Tag','Nur der 26.11. tagsüber – geplant ist die Mauer, Zug um 18:00.'],
 ];
+/* Bilder zu den Ausflügen: img/credits.json wird vom Workflow "Ausflug-Bilder laden" erzeugt */
+let IMG={};
+const escI=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const EX=[
  {id:'sh1',city:'Shanghai',name:'The Bund bei Nacht',zh:'外滩',k:'Abend',near:1,d:'Uferpromenade mit Kolonialbauten, gegenüber die beleuchtete Skyline von Pudong.',tips:['Nach Sonnenuntergang hingehen – die Lichter gehen meist bis ca. 22 Uhr an.','Von deinem Hotel zu Fuß erreichbar.']},
  {id:'sh2',city:'Shanghai',name:'Nanjing Road',zh:'南京路步行街',k:'1–2 h',near:1,d:'Lange Einkaufsstraße und Fußgängerzone, die direkt zum Bund führt.',tips:['Gut mit dem Bund am ersten Abend zu verbinden.']},
@@ -968,11 +977,12 @@ function renderEx(){
   const favN=EX.filter(e=>fav[e.id]).length;
   document.getElementById('exCats').innerHTML=[...CITY.map(c=>c[0]),'Gemerkt'].map(c=>`<button class="chip" data-excity="${c}" aria-pressed="${c===exCity}">${c==='Gemerkt'?'☆ Gemerkt ('+favN+')':c}</button>`).join('');
   const groups=exCity==='Gemerkt'?CITY.filter(c=>EX.some(e=>e.city===c[0]&&fav[e.id])):CITY.filter(c=>c[0]===exCity);
-  const row=e=>`<div class="exc"><button class="open" data-open="ex:${e.id}"><span class="t">${e.name}</span><span class="z">${e.zh}</span><span class="m">${e.d}</span><span class="tags"><span class="pill">${e.k}</span>${e.near?'<span class="pill near">nah am Hotel</span>':''}${e.plan?`<span class="pill plan">${e.plan}</span>`:''}</span></button><button class="star" data-star="${e.id}" aria-pressed="${!!fav[e.id]}" aria-label="Merken">${fav[e.id]?'★':'☆'}</button></div>`;
+  const row=e=>`<div class="exc${IMG[e.id]?' hasimg':''}">${IMG[e.id]?`<button class="tb" data-open="ex:${e.id}" tabindex="-1" aria-hidden="true"><img src="${IMG[e.id].f}" alt="" loading="lazy"></button>`:''}<button class="open" data-open="ex:${e.id}"><span class="t">${e.name}</span><span class="z">${e.zh}</span><span class="m">${e.d}</span><span class="tags"><span class="pill">${e.k}</span>${e.near?'<span class="pill near">nah am Hotel</span>':''}${e.plan?`<span class="pill plan">${e.plan}</span>`:''}</span></button><button class="star" data-star="${e.id}" aria-pressed="${!!fav[e.id]}" aria-label="Merken">${fav[e.id]?'★':'☆'}</button></div>`;
   document.getElementById('exList').innerHTML=groups.length?groups.map(c=>`<section class="card"><h3>${c[0]} <span class="note" style="font-weight:400">${c[1]}</span></h3><p class="citynote">${c[2]}</p>${EX.filter(e=>e.city===c[0]&&(exCity!=='Gemerkt'||fav[e.id])).map(row).join('')}</section>`).join(''):`<div class="card empty">Noch nichts gemerkt. Tippe bei einem Ausflug auf ☆.</div>`;
 }
 function openEx(id){const e=EX.find(x=>x.id===id);if(!e)return;
   openSheet(`${top_('Ausflug · '+e.city)}<h3 id="sh-title">${e.name}</h3><div class="sh-full zh" style="font-size:16px">${e.zh}</div>
+   ${IMG[e.id]?`<img class="shimg" src="${IMG[e.id].f}" alt="${e.name}"><p class="credit">Foto: ${escI(IMG[e.id].a)} · <a href="${IMG[e.id].u}" target="_blank" rel="noopener">${escI(IMG[e.id].l)}</a> · Wikimedia Commons</p>`:''}
    <div class="tags" style="margin:8px 0 12px"><span class="pill">${e.k}</span>${e.near?'<span class="pill near">nah am Hotel</span>':''}${e.plan?`<span class="pill plan">${e.plan}</span>`:''}</div>
    <div class="btns"><button class="btn primary" data-extaxi="${e.id}">Taxi-Karte zeigen</button><button class="btn" data-star="${e.id}" aria-pressed="${!!fav[e.id]}">${fav[e.id]?'★ Gemerkt':'☆ Merken'}</button>${mapLinks(e.zh)}</div>
    <p style="margin:0;font-size:15px">${e.d}</p>
@@ -1062,6 +1072,7 @@ document.addEventListener('change',e=>{const t=e.target;
   else if(t.dataset.prep){prep[t.dataset.prep]=t.checked;store.set('cr-prep',prep)}
   else if(t.dataset.pk){pack[t.dataset.pk]=t.checked;store.set('cr-pack',pack);renderPack()}});
 
+fetch('img/credits.json').then(r=>r.ok?r.json():{}).then(j=>{IMG=j||{};renderEx()}).catch(()=>{});
 renderReise();renderEx();renderFood();renderPack();convNote();renderTaxiList();renderPhrases();renderInfos();initExp();renderExp();showSeg('taxi');
 setInterval(()=>{renderTop();renderHero()},30000);
 const h0=(location.hash||'').slice(1);showTab(TABS.includes(h0)?h0:'reise');

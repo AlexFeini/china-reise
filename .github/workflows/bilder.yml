@@ -1,0 +1,30 @@
+name: Ausflug-Bilder laden
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/images.tsv', '.github/scripts/fetch_images.py']
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  bilder:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 .github/scripts/fetch_images.py
+      - name: Bilder committen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add img
+          if git diff --cached --quiet; then echo "Keine Änderungen"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Ausflug-Bilder von Wikimedia Commons aktualisiert"
+          git push
+          # Pushes mit dem Workflow-Token starten kein Pages-Deployment von selbst
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || true
