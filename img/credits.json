@@ -1,0 +1,176 @@
+{
+"bj1": {
+"a": "Velatrix",
+"f": "img/bj1.jpg",
+"l": "CC0",
+"u": "https://commons.wikimedia.org/wiki/File:Great_Wall_of_China_July_2006.JPG"
+},
+"bj2": {
+"a": "Anagoria",
+"f": "img/bj2.jpg",
+"l": "CC BY 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:2016-09-04_Beijing_Nanluoguxiang_anagoria_23.jpg"
+},
+"bj3": {
+"a": "chinogypsie",
+"f": "img/bj3.jpg",
+"l": "CC BY 2.0",
+"u": "https://commons.wikimedia.org/wiki/File:Beijinglakeview.jpg"
+},
+"bj4": {
+"a": "Pixelflake",
+"f": "img/bj4.jpg",
+"l": "CC BY-SA 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:The_Forbidden_City_-_View_from_Coal_Hill.jpg"
+},
+"cq1": {
+"a": "Jonashtand",
+"f": "img/cq1.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:202308_Hongya_Cave_at_night_from_Qiansimen_Bridge.jpg"
+},
+"cq13": {
+"a": "广州阿沾",
+"f": "img/cq13.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:Yu_Zhong_Arhat_Temple.jpg"
+},
+"cq2": {
+"a": "Baycrest",
+"f": "img/cq2.jpg",
+"l": "CC BY-SA 2.5",
+"u": "https://commons.wikimedia.org/wiki/File:Jiefangbei_night.jpg"
+},
+"cq4": {
+"a": "慕尼黑啤酒",
+"f": "img/cq4.jpg",
+"l": "CC BY 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:Chongqing_Changjiang_Cableway.jpg"
+},
+"cq5": {
+"a": "重庆轨交18",
+"f": "img/cq5.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:%E5%8D%81%E5%85%AB%E6%A2%AF.jpg"
+},
+"cq8": {
+"a": "Praneeth Thalla",
+"f": "img/cq8.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:Hot_Pot.jpg"
+},
+"cq9": {
+"a": "Brookqi",
+"f": "img/cq9.jpg",
+"l": "Public domain",
+"u": "https://commons.wikimedia.org/wiki/File:Wulongtianshengsanqiao.JPG"
+},
+"sh1": {
+"a": "钉钉",
+"f": "img/sh1.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:The_Bund_2.jpg"
+},
+"sh12": {
+"a": "Nanhuajiaren",
+"f": "img/sh12.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:Expo_Culture_Park_10.jpg"
+},
+"sh2": {
+"a": "Melvin Loi",
+"f": "img/sh2.jpg",
+"l": "CC BY-SA 2.0",
+"u": "https://commons.wikimedia.org/wiki/File:East_Nanjing_Road_2020_(50361842166).jpg"
+},
+"sh3": {
+"a": "Stefan Fussan",
+"f": "img/sh3.jpg",
+"l": "CC BY-SA 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:Shanghai_-_Yu_Garden_-_0035.jpg"
+},
+"sh4": {
+"a": "This Photo was taken by Supanut Arunoprayote.\n\nFeel free to use any of my images, but please mention me as the author an",
+"f": "img/sh4.jpg",
+"l": "CC BY 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:Wukang_Mansion_20251128.jpg"
+},
+"sh5": {
+"a": "Balon Greyjoy",
+"f": "img/sh5.jpg",
+"l": "CC0",
+"u": "https://commons.wikimedia.org/wiki/File:20191114_Shanghai_Tower_(2).jpg"
+},
+"sh6": {
+"a": "Jakub Hałun",
+"f": "img/sh6.jpg",
+"l": "CC BY-SA 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:20090426_Shanghai_5243.jpg"
+},
+"sh7": {
+"a": "Chensiyuan",
+"f": "img/sh7.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:1_zhujiajiao_2023_aerial.jpg"
+},
+"sh8": {
+"a": "This Photo was taken by Supanut Arunoprayote.\n\nFeel free to use any of my images, but please mention me as the author an",
+"f": "img/sh8.jpg",
+"l": "CC BY 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:Oriental_Pearl_Tower_20251126.jpg"
+},
+"sh9": {
+"a": "Legolas1024",
+"f": "img/sh9.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:%E9%9D%99%E5%AE%89%E5%AF%BA%C2%B7%E4%B8%8A%E6%B5%B7%E9%9D%99%E5%AE%89.jpg"
+},
+"ys1": {
+"a": "Qeqertaq",
+"f": "img/ys1.jpg",
+"l": "CC BY 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:Yulong.JPG"
+},
+"ys2": {
+"a": "Zhangzhugang",
+"f": "img/ys2.jpg",
+"l": "CC BY-SA 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:Yangshuo_Yulong_He_2012.09.30_09-10-15.jpg"
+},
+"ys3": {
+"a": "Tiger@西北",
+"f": "img/ys3.jpg",
+"l": "CC BY-SA 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:%E5%85%B4%E5%B9%B3%E9%A9%AC%E5%B5%AC%E8%A5%BF%E6%B1%89%E9%BB%84%E5%B1%B1%E5%AE%AB_-_panoramio.jpg"
+},
+"zj1": {
+"a": "xiquinhosilva",
+"f": "img/zj1.jpg",
+"l": "CC BY 2.0",
+"u": "https://commons.wikimedia.org/wiki/File:Tianmen_38330-Zhangjiajie_(49047525877).jpg"
+},
+"zj3": {
+"a": "Jörg Radestock",
+"f": "img/zj3.jpg",
+"l": "CC BY-SA 3.0",
+"u": "https://commons.wikimedia.org/wiki/File:China_Tianzi_Gebirge.JPG"
+},
+"zj4": {
+"a": "HighestBridges",
+"f": "img/zj4.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:ZhangjiajieGlassByHighestBridges.jpg"
+},
+"zj5": {
+"a": "Brookqi",
+"f": "img/zj5.jpg",
+"l": "Public domain",
+"u": "https://commons.wikimedia.org/wiki/File:Huanglongdong.JPG"
+},
+"zj6": {
+"a": "chensiyuan",
+"f": "img/zj6.jpg",
+"l": "CC BY-SA 4.0",
+"u": "https://commons.wikimedia.org/wiki/File:1_furong_panorama_2012.jpg"
+}
+}
