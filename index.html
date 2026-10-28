@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="China Reise">
 <meta name="theme-color" content="#0B0C0D">
+<meta name="robots" content="noindex, nofollow, noarchive">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="icon-192.png">
@@ -59,7 +60,7 @@ h2.vh{font-weight:600;font-size:28px;line-height:1.1;margin:6px 0 0;letter-spaci
 .art svg{width:100%;height:100%;display:block}
 
 /* Icon-Leiste */
-.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:-6px}
+.qa{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin-top:-6px}
 .qa button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0;cursor:pointer;color:var(--muted);font-size:12px;font-weight:600}
 .qa svg{width:26px;height:26px;color:var(--ink)}
 .qa button:active svg{color:var(--blue-2)}
@@ -326,6 +327,19 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 .tb-photo .nav.p{left:10px} .tb-photo .nav.n{right:10px}
 .tb-photo .cnt{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .tb-photo .foot{display:flex;justify-content:center;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px))}
+.now{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--green);border-radius:6px;padding:12px 14px;cursor:pointer;color:var(--ink);font:inherit}
+.now .l{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.now small{font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.06em}
+.now b{font-size:16px;font-weight:600;line-height:1.25}
+.now span.s{font-size:13px;color:var(--muted)}
+.big .say{align-self:flex-start;border:0;border-radius:22px;background:#E2E4E6;color:#0B0C0D;font:inherit;font-weight:600;font-size:15px;padding:10px 16px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.big .say svg{width:20px;height:20px}
+.budget .tr{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin:8px 0 6px}
+.budget .tr i{display:block;height:100%;background:var(--green);border-radius:4px}
+.budget .tr i.over{background:var(--red)}
+.budget .row2{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--muted)}
+.budget .row2 b{color:var(--ink);font-weight:600}
+.tb-review canvas{width:100%;height:auto;border-radius:6px;display:block;background:var(--panel-2)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -357,10 +371,12 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
 </svg></div>
   <div class="qa">
   <button data-qa="taxi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16V11l2-5h10l2 5v5M3 16h18v3H3zM5 11h14"/><circle cx="7.5" cy="16" r="1"/><circle cx="16.5" cy="16" r="1"/></svg>Taxi-Karte</button>
+  <button data-qa="hotel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/></svg>Zum Hotel</button>
   <button data-qa="saetze"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>Sätze</button>
   <button data-qa="geld"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l5 7 5-7M6 11h12M6 15h12M12 11v9"/></svg>Ausgabe</button>
   <button data-qa="sos" class="sos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/></svg>Notruf</button>
 </div>
+  <button class="now" id="now" hidden></button>
   <section class="hero" id="hero" hidden></section>
   <div class="stepper" id="stepper"></div>
   <nav class="strip" id="strip" aria-label="Tage"></nav>
@@ -405,7 +421,10 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
     </div>
   </form>
   <div class="sum" id="expSum"></div>
+  <section class="card budget" id="expBudget"><h3>Tagesbudget</h3><div id="bgOut"></div><div class="rate" style="margin-top:10px"><label for="eBudget">Budget pro Tag:</label><input id="eBudget" inputmode="decimal" autocomplete="off" placeholder="z. B. 60"><span>€</span></div></section>
   <section class="card" id="expCats"></section>
+  <section class="card" id="expCity"></section>
+  <section class="card" id="expDays"></section>
   <section class="card" id="expList"></section>
   <div class="rate"><label for="eRate">Kurs: 1 € =</label><input id="eRate" inputmode="decimal"><span>¥</span><span class="note">Stand 23.10.2026 · anpassbar</span></div>
   <p class="note">Ausgaben werden nur auf diesem Gerät gespeichert.</p>
@@ -447,10 +466,16 @@ dd{margin:0;font-weight:600;overflow-wrap:anywhere}
   <div id="tb-home" style="display:flex;flex-direction:column;gap:22px">
    <h2 class="vh">Tagebuch</h2>
    <p class="lead">Text und Fotos zu jedem Reisetag.</p>
+   <section class="card">
+     <h3>Fotos einsortieren</h3>
+     <p class="note" style="margin:0">Wähle mehrere Fotos aus der Mediathek. Jedes landet automatisch beim Tag, an dem es aufgenommen wurde.</p>
+     <div class="btns"><label class="btn primary" for="tbSort">Fotos auswählen</label><input id="tbSort" type="file" accept="image/*" multiple hidden><button class="btn" type="button" data-tbreview>Rückblick</button></div>
+     <div class="tb-busy" id="tbSortInfo" hidden></div>
+   </section>
    <div class="tb-list" id="tbList"></div>
    <section class="card">
      <h3>Sicherung</h3>
-     <p class="note" style="margin:0">Das Tagebuch liegt nur auf diesem Gerät. Exportiere ab und zu ein Backup, z. B. in „Dateien“ oder iCloud Drive. Damit stellst du alles auf einem neuen Gerät wieder her.</p>
+     <p class="note" style="margin:0">Tagebuch, Ausgaben, Häkchen, Packliste und Merkliste liegen nur auf diesem Gerät. Exportiere ab und zu ein Backup, z. B. in „Dateien“ oder iCloud Drive. Damit stellst du alles auf einem neuen Gerät wieder her.</p>
      <div class="btns"><button class="btn primary" type="button" id="tbExport">Backup exportieren</button><label class="btn" for="tbImport">Wiederherstellen</label><input id="tbImport" type="file" accept=".json,application/json" hidden></div>
      <div class="note" id="tbInfo"></div>
    </section>
@@ -606,10 +631,37 @@ function allRows(){const out=[];DAYS.forEach(iso=>rowsFor(iso).rows.forEach(r=>{
 function taxiFor(it){return it.goZh||(it.type==='hotel'&&(it.zh||it.hotelZh))||it.fromZh||it.placeZh||(it.type==='box'&&it.zh)?it.id:null}
 let heroTaxi=null;
 function tripProgress(){const now=Date.now(),a=Date.UTC(2026,10,13,17,40),b=Date.UTC(2026,10,27,15,35);return Math.max(0,Math.min(1,(now-a)/(b-a)))}
+/* Was gerade läuft: Fahrt, Flug, Zug oder Programmpunkt, der begonnen hat und noch nicht vorbei ist */
+function endMs(r,next){
+  const it=r.it;
+  if(it.type==='flight'||it.type==='train'){const a=times(it.arr)[0];if(!a)return r.ms+3*36e5;const [y,mo,d]=r.iso.split('-').map(Number);const [h,mi]=a.split(':').map(Number);
+    let e=Date.UTC(y,mo-1,d,h,mi)-8*36e5;while(e<=r.ms)e+=864e5;return e}
+  if(it.type==='car')return r.ms+90*6e4;
+  if(it.type==='box')return r.ms+2*36e5;
+  const cap=r.ms+6*36e5;return next&&next.iso===r.iso?Math.min(next.ms,cap):cap;
+}
+function currentRow(now){
+  const rs=allRows().filter(r=>r.it.type!=='hotel'&&!r.title.startsWith('Landung'));let cur=null;
+  rs.forEach((r,i)=>{if(r.ms<=now&&endMs(r,rs[i+1])>now)cur=r});return cur;
+}
+function renderNow(){
+  const el=document.getElementById('now');const c=currentRow(Date.now());
+  if(!c){el.hidden=true;return}
+  const arr=(c.it.type==='flight'||c.it.type==='train')&&c.it.arr?` · an ${c.it.arr}`:'';
+  el.dataset.open=c.ex?'ex:'+c.ex:c.it.id;
+  el.innerHTML=`<span class="l"><small>Läuft gerade · seit ${c.time}${c.tz?' (dt. Zeit)':''}</small><b>${c.title}</b>${c.sub?`<span class="s">${c.sub}${arr&&!c.sub.includes('an ')?arr:''}</span>`:''}</span><span class="chev">›</span>`;
+  el.hidden=false;
+}
+/* Hotel, in dem du heute schläfst (vor dem Check-out noch das alte) */
+function hotelNow(){
+  const cn=cnNow(),hs=D.filter(x=>x.type==='hotel');if(cn.date<hs[0].date)return hs[0];
+  return hs.find(x=>x.end===cn.date&&cn.time<pad(times(x.co).pop()))||hs.find(x=>cn.date>=x.date&&cn.date<x.end)||hs[hs.length-1];
+}
 function renderHero(){
+  renderNow();
   const el=document.getElementById('hero');const now=Date.now();
   const n=allRows().find(r=>r.ms>now);if(!n){el.hidden=true;heroTaxi=null;return}
-  const it=n.it;const tx=n.ex?'a11':taxiFor(it);heroTaxi=tx;
+  const it=n.it;const tx=n.ex?'ex:'+n.ex:taxiFor(it);heroTaxi=tx;
   const tip=(it.tips&&it.tips[0])||((it.notes||[]).find(x=>!x.startsWith('Preis')))||'';
   el.innerHTML=`<div class="in-wrap"><div class="eb"><span>Als Nächstes</span><span class="in">${inTxt(n.ms-now)}</span></div>
    <h3>${n.title}</h3><div class="sub">${fmtDay(n.iso).short} · ${n.time}${n.tz?' (deutsche Zeit)':''}${it.from&&it.type!=='hotel'&&!n.title.startsWith('Landung')?' · ab '+it.from:''}</div>
@@ -707,18 +759,24 @@ function openOverview(){
    <ul class="blist">${list.map(x=>{const s=effStatus(x);return `<li><button data-open="${x.id}"><span class="a">${x.type==='hotel'?short(x):(x.type==='flight'?'Flug ':x.type==='train'?'Zug ':'')+x.title}</span><span class="p">${x.price?de.format(x.price):x.priceNote||''}</span><span class="b">${fmtDay(x.date).short} · <span class="tag ${s}" style="margin:0">${STATUS[s]}</span></span></button></li>`}).join('')}</ul>
    <div class="sec"><h4>Route</h4><div class="routeline">${STOPS.map((s_,i)=>`${i?'<span>›</span>':''}<span><b>${s_[0]}</b> ${s_[2]} N.</span>`).join('')}</div></div>
    <div class="sec check"><h4>Vor der Abreise</h4>${PREP.map(([k,t])=>`<label><input type="checkbox" id="${k}" data-prep="${k}" ${prep[k]?'checked':''}><span>${t}</span></label>`).join('')}<p class="note">Häkchen werden nur auf diesem Gerät gespeichert.</p></div>
-   <div class="sec"><h4>Kalender</h4><p style="margin-bottom:10px">Alle Flüge, Züge, Fahrten und Check-ins mit Erinnerung in deinen iPhone-Kalender übernehmen.</p><a class="btn primary" href="https://alexfeini.github.io/china-reise/china-reise.ics" target="_blank" rel="noopener">In Kalender übernehmen</a><p class="note" style="margin-top:8px">Öffnet die Kalenderdatei. Auf dem iPhone „Alle hinzufügen“ tippen.</p></div>`);
+   <div class="sec"><h4>Kalender</h4><p style="margin-bottom:10px">Alle Flüge, Züge, Fahrten und Check-ins mit Erinnerung in deinen iPhone-Kalender übernehmen.</p><a class="btn primary" href="https://alexfeini.github.io/china-reise/china-reise.ics" target="_blank" rel="noopener">In Kalender übernehmen</a><p class="note" style="margin-top:8px">Öffnet die Kalenderdatei. Auf dem iPhone „Alle hinzufügen“ tippen.</p><p class="note" style="margin-top:8px">Schon früher übernommen? Dann nur die 6 neuen Termine (Besorgungen, Tagesplan Zhangjiajie, Drohnenversand) hinzufügen, sonst stehen die alten doppelt drin:</p><a class="btn" style="margin-top:6px" href="https://alexfeini.github.io/china-reise/china-reise-neu.ics" target="_blank" rel="noopener">Nur neue Termine</a></div>`);
 }
 
 /* ===== Taxi & Großanzeige ===== */
 const big=document.getElementById('big');let lastFocus=null,wl=null;
 function showBig(html){lastFocus=document.activeElement;big.innerHTML=`<button class="x" data-bigclose aria-label="Schließen">×</button>`+html;big.hidden=false;big.querySelector('.x').focus();try{navigator.wakeLock&&navigator.wakeLock.request('screen').then(l=>{wl=l},()=>{})}catch(e){}}
 function closeBig(){try{wl&&wl.release()}catch(e){}wl=null;big.hidden=true;lastFocus&&lastFocus.focus&&lastFocus.focus()}
-function showTaxi(id){const it=D.find(x=>x.id===id);if(!it)return;let name,addr='',d_;
+/* Vorlesen auf Chinesisch (iPhone: geht offline, wenn die chinesische Stimme geladen ist) */
+const canSay='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;
+const sayBtn=t=>canSay&&t?`<button class="say" data-say="${escI(t)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>Vorlesen</button>`:'';
+function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='zh-CN';u.rate=.85;const v=speechSynthesis.getVoices().find(x=>/^zh[-_]CN/i.test(x.lang));if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
+function showPlace(zh,de_){showBig(`<div class="hint">请带我去这里 · 谢谢</div><div class="zh">${zh}</div><div class="de">${de_}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>${sayBtn('请带我去'+zh)}`)}
+function showTaxi(id){if(String(id).startsWith('ex:')){const q=EX.find(y=>y.id===id.slice(3));if(q&&q.zh)showPlace(q.zh,q.name);return}
+  const it=D.find(x=>x.id===id);if(!it)return;let name,addr='',d_;
   if(it.goZh){name=it.goZh;addr=it.goAddr||'';d_='Ziel: '+it.to}
   else if(it.type==='hotel'||it.type==='box'){name=it.hotelZh||'';addr=it.zh||'';d_=(it.type==='hotel'?it.title:it.to)+(it.addr?' · '+it.addr:'')}
   else if(it.fromZh){name=it.fromZh;d_=it.from}else{name=it.placeZh;d_=it.place}
-  showBig(`<div class="hint">请带我去这里 · 谢谢</div>${name?`<div class="zh">${name}</div>`:''}${addr?`<div class="zh sm">${addr}</div>`:''}${it.phone?`<div class="de">电话 ${it.phone}</div>`:''}<div class="de">${d_}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>`)}
+  showBig(`<div class="hint">请带我去这里 · 谢谢</div>${name?`<div class="zh">${name}</div>`:''}${addr?`<div class="zh sm">${addr}</div>`:''}${it.phone?`<div class="de">电话 ${it.phone}</div>`:''}<div class="de">${d_}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>${sayBtn(name?'请带我去'+name:'')}`)}
 function renderTaxiList(){
   const hs=D.filter(x=>x.type==='hotel'&&(x.zh||x.hotelZh));const tr=D.filter(x=>x.fromZh);
   const row=(id,a,z,b)=>`<button class="lrow" data-taxi="${id}"><span><span class="a">${a}</span><br><span class="z">${z}</span><br><span class="b">${b}</span></span><span class="chev">›</span></button>`;
@@ -780,6 +838,25 @@ const PH=[
  ['Drohne','(Ans Hotel) Können Sie ein Paket für mich annehmen?','可以帮我代收包裹吗？','kěyǐ bāng wǒ dàishōu bāoguǒ ma?'],
  ['Drohne','(Ans Hotel) Ich checke am 26. November ein.','我11月26日入住。','wǒ shíyī yuè èrshíliù rì rùzhù'],
  ['Drohne','(Ans Hotel) Ich erwarte ein Paket. Ist es angekommen?','我在等一个包裹，到了吗？','wǒ zài děng yí ge bāoguǒ, dào le ma?'],
+ ['Apotheke','Wo ist die nächste Apotheke?','最近的药店在哪里？','zuìjìn de yàodiàn zài nǎlǐ?'],
+ ['Apotheke','Ich habe Kopfschmerzen.','我头疼。','wǒ tóuténg'],
+ ['Apotheke','Ich habe Fieber.','我发烧了。','wǒ fāshāo le'],
+ ['Apotheke','Ich bin erkältet.','我感冒了。','wǒ gǎnmào le'],
+ ['Apotheke','Ich habe Halsschmerzen.','我嗓子疼。','wǒ sǎngzi téng'],
+ ['Apotheke','Ich habe Husten.','我咳嗽。','wǒ késou'],
+ ['Apotheke','Ich habe Magenschmerzen.','我胃疼。','wǒ wèi téng'],
+ ['Apotheke','Ich habe Durchfall.','我拉肚子。','wǒ lā dùzi'],
+ ['Apotheke','Mir ist übel.','我恶心。','wǒ ěxin'],
+ ['Apotheke','Ich habe mir den Fuß verstaucht.','我扭到脚了。','wǒ niǔ dào jiǎo le'],
+ ['Apotheke','Ich brauche Pflaster.','我需要创可贴。','wǒ xūyào chuàngkětiē'],
+ ['Apotheke','Haben Sie etwas gegen Mückenstiche?','有治蚊虫叮咬的药吗？','yǒu zhì wénchóng dīngyǎo de yào ma?'],
+ ['Apotheke','Wie oft am Tag muss ich das nehmen?','这个药一天吃几次？','zhège yào yì tiān chī jǐ cì?'],
+ ['Apotheke','Macht das müde?','吃了会犯困吗？','chī le huì fànkùn ma?'],
+ ['Apotheke','Ich bin allergisch gegen Penicillin.','我对青霉素过敏。','wǒ duì qīngméisù guòmǐn'],
+ ['Apotheke','Ich bin allergisch gegen Nüsse.','我对坚果过敏。','wǒ duì jiānguǒ guòmǐn'],
+ ['Apotheke','Ich bin allergisch gegen Erdnüsse.','我对花生过敏。','wǒ duì huāshēng guòmǐn'],
+ ['Apotheke','Ich bin allergisch gegen Meeresfrüchte.','我对海鲜过敏。','wǒ duì hǎixiān guòmǐn'],
+ ['Notfall','Bitte bringen Sie mich ins Krankenhaus.','请带我去医院。','qǐng dài wǒ qù yīyuàn'],
  ['Notfall','Hilfe!','救命！','jiùmìng!'],
  ['Notfall','Ich brauche einen Arzt.','我需要看医生。','wǒ xūyào kàn yīshēng'],
  ['Notfall','Bitte rufen Sie die Polizei.','请帮我报警。','qǐng bāng wǒ bàojǐng'],
@@ -792,7 +869,7 @@ function renderPhrases(){
   document.getElementById('phCats').innerHTML=cats.map(c=>`<button class="chip" data-phcat="${c}" aria-pressed="${c===phCat}">${c}</button>`).join('');
   document.getElementById('phList').innerHTML=PH.map((p,i)=>[p,i]).filter(([p])=>phCat==='Alle'||p[0]===phCat).map(([p,i])=>`<button class="lrow" data-ph="${i}"><span><span class="a">${p[1]}</span><br><span class="z">${p[2]}</span><br><span class="p">${p[3]}</span></span><span class="chev">›</span></button>`).join('');
 }
-function showPhrase(i){const p=PH[i];showBig(`<div class="zh">${p[2]}</div><div class="py">${p[3]}</div><div class="de">${p[1]}</div>`)}
+function showPhrase(i){const p=PH[i];showBig(`<div class="zh">${p[2]}</div><div class="py">${p[3]}</div><div class="de">${p[1]}</div>${sayBtn(p[2])}`)}
 
 /* ===== Infos ===== */
 const INFO=[
@@ -862,6 +939,15 @@ const INFO=[
   <li><b>Toiletten:</b> oft Hocktoiletten und kein Papier – Taschentücher immer dabeihaben.</li>
   <li><b>Heizung:</b> Im Süden (Yangshuo, Zhangjiajie, Chongqing) gibt es meist keine Zentralheizung, nur die Klimaanlage im Heizmodus. Beijing heizt ab Mitte November.</li>
   <li><b>Zeit:</b> ganz China hat eine Zeitzone, im November 7 Stunden vor Deutschland.</li>
+ </ul>`],
+ ['Gesundheit & Apotheke','Apotheke finden, Medikamente, Notfall',`<ul>
+  <li><b>Apotheke</b> heißt 药店 (yàodiàn) oder 药房 (yàofáng), erkennbar am grünen Kreuz. In Städten gibt es sie an fast jeder Ecke, viele haben bis spät abends offen. In Amap nach 药店 suchen.</li>
+  <li><b>Sätze für die Apotheke</b> (Beschwerden, Allergien) stehen unter Hilfe › Sätze › Apotheke. Antippen zeigt sie groß, „Vorlesen“ spricht sie auf Chinesisch.</li>
+  <li><b>Eigene Medikamente</b> mitnehmen, am besten in der Originalpackung. Chinesische Packungen sind nur auf Chinesisch beschriftet, Wirkstoffe heißen anders.</li>
+  <li><b>Lieferung:</b> Lieferdienste wie Meituan bringen auch Apothekenartikel ins Hotel. Mit ausländischem Konto klappt das nicht immer – die Hotel-Rezeption hilft beim Bestellen.</li>
+  <li><b>Arzt:</b> Bei leichten Beschwerden zuerst die Hotel-Rezeption fragen. Im Krankenhaus wird vor der Behandlung bezahlt, Reisepass mitnehmen. Notruf Rettung: <b>120</b>.</li>
+  <li><b>Versicherung:</b> Die Notfallnummer deiner Auslandskrankenversicherung im Handy speichern und Rechnungen aufheben.</li>
+  <li><b>Magen:</b> Leitungswasser nicht trinken. In Chongqing ist das Essen sehr scharf, „微辣“ (wēi là) heißt „nur leicht scharf“.</li>
  </ul>`],
  ['Kultur & Etikette','Ein paar Do’s und Don’ts',`<ul>
   <li>Stäbchen nie senkrecht in den Reis stecken – erinnert an Totenrituale.</li>
@@ -1010,7 +1096,7 @@ function openEx(id){const e=EX.find(x=>x.id===id);if(!e)return;
 
 /* ===== Ausgaben ===== */
 const CATS=['Essen','Transport','Eintritt','Einkauf','Unterkunft','Sonstiges'];
-let exps=store.get('cr-exp')||[],rate=store.get('cr-rate')||7.48,cur='CNY',delArm=null;
+let exps=store.get('cr-exp')||[],rate=store.get('cr-rate')||7.48,budget=store.get('cr-budget')||0,cur='CNY',delArm=null;
 const toCNY=e=>e.cur==='CNY'?e.amt:e.amt*rate,toEUR=e=>e.cur==='EUR'?e.amt:e.amt/rate;
 function defaultDate(){const d=cnNow().date;return d<'2026-11-13'||d>'2026-11-27'?'2026-11-13':d}
 function initExp(){document.getElementById('eCat').innerHTML=CATS.map(c=>`<option>${c}</option>`).join('');document.getElementById('eDate').value=defaultDate();document.getElementById('eRate').value=String(rate).replace('.',',')}
@@ -1019,6 +1105,18 @@ function renderExp(){
   document.getElementById('expSum').innerHTML=`<div><span>Vor Ort ausgegeben</span><strong>${cny.format(tC)}</strong></div><div><span>in Euro</span><strong>${de.format(tE)}</strong></div><div><span>Ø pro Tag</span><strong>${de.format(days?tE/days:0)}</strong></div><div><span>Mit Buchungen gesamt</span><strong>${de.format(booked+tE)}</strong></div>`;
   const by=CATS.map(c=>[c,exps.filter(e=>e.cat===c).reduce((a,e)=>a+toEUR(e),0)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]),mx=Math.max(1,...by.map(x=>x[1]));
   document.getElementById('expCats').innerHTML=`<h3>Nach Kategorie</h3>`+(by.length?`<div class="bars">${by.map(([c,v])=>`<div class="bar"><span>${c}</span><span class="tr"><i style="width:${(v/mx*100).toFixed(1)}%"></i></span><span class="v">${de.format(v)}</span></div>`).join('')}</div>`:`<div class="empty">Noch keine Ausgaben. Trag oben deine erste ein, z. B. das Taxi vom Flughafen.</div>`);
+  const bars=(t,arr,empty)=>{const m=Math.max(1,...arr.map(x=>x[1]));return `<h3>${t}</h3>`+(arr.length?`<div class="bars">${arr.map(([c,v])=>`<div class="bar"><span>${c}</span><span class="tr"><i style="width:${(v/m*100).toFixed(1)}%"></i></span><span class="v">${de.format(v)}</span></div>`).join('')}</div>`:`<div class="empty">${empty}</div>`)};
+  const cityOf=iso=>{const c=cityShort(iso);return c==='Frankfurt'?'Shanghai':c};const byC={};exps.forEach(e=>{const c=cityOf(e.date);byC[c]=(byC[c]||0)+toEUR(e)});
+  const cities=[...new Set(DAYS.map(cityOf))].filter(c=>byC[c]).map(c=>[c,byC[c]]);
+  document.getElementById('expCity').innerHTML=bars('Nach Stadt',cities,'Sobald du Ausgaben einträgst, siehst du hier, was jede Station gekostet hat.');
+  const byD={};exps.forEach(e=>{byD[e.date]=(byD[e.date]||0)+toEUR(e)});
+  document.getElementById('expDays').innerHTML=bars('Nach Tag',DAYS.filter(d=>byD[d]).map(d=>{const f=fmtDay(d);return [`${f.wd} ${f.dn}.`,byD[d]]}),'Hier erscheinen die Summen pro Tag.');
+  const bo=document.getElementById('bgOut'),bi=document.getElementById('eBudget');if(document.activeElement!==bi)bi.value=budget?String(budget).replace('.',','):'';
+  if(!budget)bo.innerHTML=`<p class="note" style="margin:0">Leg fest, wie viel du pro Tag vor Ort ausgeben willst. Dann siehst du hier, was heute noch übrig ist.</p>`;
+  else{const day=defaultDate(),spent=byD[day]||0,left=budget-spent,n=DAYS.indexOf(day)+1,tot=exps.filter(e=>e.date<=day).reduce((a,e)=>a+toEUR(e),0),plan=budget*n;
+    bo.innerHTML=`<div class="row2"><span>${day===cnNow().date?'Heute':fmtDay(day).short}: <b>${de.format(spent)}</b> von ${de.format(budget)}</span><span><b>${left>=0?de.format(left)+' übrig':de.format(-left)+' drüber'}</b></span></div>
+     <div class="tr"><i class="${left<0?'over':''}" style="width:${Math.min(100,spent/budget*100).toFixed(1)}%"></i></div>
+     <div class="row2"><span>Bis hier (${n} ${n>1?'Tage':'Tag'}): <b>${de.format(tot)}</b> von ${de.format(plan)}</span><span>${tot<=plan?'im Rahmen':de.format(tot-plan)+' drüber'}</span></div>`}
   const g={};exps.forEach(e=>{(g[e.date]=g[e.date]||[]).push(e)});const keys=Object.keys(g).sort().reverse();
   document.getElementById('expList').innerHTML=`<h3>Alle Ausgaben</h3>`+(keys.length?keys.map(k=>`<div class="eday"><h4><span>${fmtDay(k).long}</span><span>${de.format(g[k].reduce((a,e)=>a+toEUR(e),0))}</span></h4>${g[k].slice().reverse().map(e=>`<div class="erow"><span><span class="c">${e.cat}</span>${e.note?`<br><span class="n">${e.note}</span>`:''}</span><span class="a">${e.cur==='CNY'?cny.format(e.amt):de.format(e.amt)}<small>${e.cur==='CNY'?de.format(toEUR(e)):cny.format(toCNY(e))}</small></span><button class="del ${delArm===e.id?'confirm':''}" data-del="${e.id}" aria-label="Löschen">${delArm===e.id?'Löschen?':'×'}</button></div>`).join('')}</div>`).join(''):`<div class="empty">Hier erscheinen deine Ausgaben, nach Tagen sortiert.</div>`);
 }
@@ -1027,6 +1125,7 @@ document.getElementById('expForm').addEventListener('submit',e=>{e.preventDefaul
   if(!(amt>0)){err.textContent='Bitte einen Betrag größer als 0 eingeben, z. B. 45 oder 12,50.';err.hidden=false;document.getElementById('eAmt').focus();return}
   err.hidden=true;exps.push({id:Date.now().toString(36),amt:Math.round(amt*100)/100,cur,cat:document.getElementById('eCat').value,date:document.getElementById('eDate').value||defaultDate(),note:document.getElementById('eNote').value.trim()});
   store.set('cr-exp',exps);document.getElementById('eAmt').value='';document.getElementById('eNote').value='';renderExp()});
+document.getElementById('eBudget').addEventListener('change',e=>{const v=num(e.target.value||'0');budget=v>0?Math.round(v*100)/100:0;store.set('cr-budget',budget);renderExp()});
 document.getElementById('eRate').addEventListener('change',e=>{const v=parseFloat(e.target.value.replace(',','.'));if(v>0){rate=v;store.set('cr-rate',rate);renderExp();convNote()}else e.target.value=String(rate).replace('.',',')});
 
 
@@ -1059,19 +1158,20 @@ function showTab(t){if(!TABS.includes(t))t='reise';TABS.forEach(x=>{document.get
 function showSeg(k){['taxi','saetze','packen','infos'].forEach(x=>{document.getElementById('h-'+x).hidden=x!==k;document.querySelector(`[data-seg="${x}"]`).setAttribute('aria-pressed',x===k)})}
 
 document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-tab],[data-open],[data-day],[data-qa],[data-taxi],[data-extaxi],[data-excity],[data-star],[data-overview],[data-ovf],[data-close],[data-bigclose],[data-copy],[data-ph],[data-phcat],[data-seg],[data-cur],[data-del],[data-dseg],[data-foodcu],[data-food],[data-foodtaxi],[data-pkdel]');if(!b)return;
+  const b=e.target.closest('[data-tab],[data-open],[data-day],[data-qa],[data-taxi],[data-extaxi],[data-excity],[data-star],[data-overview],[data-ovf],[data-close],[data-bigclose],[data-copy],[data-ph],[data-phcat],[data-seg],[data-cur],[data-del],[data-dseg],[data-foodcu],[data-food],[data-foodtaxi],[data-pkdel],[data-say]');if(!b)return;
   const d=b.dataset;
   if(d.tab){closeSheet();showTab(d.tab)}
   else if(d.open){if(d.open.startsWith('ex:'))openEx(d.open.slice(3));else{const it=D.find(x=>x.id===d.open);it&&it.exLink?openEx(it.exLink):openItem(d.open)}}
   else if(d.day){sel=d.day;renderStepper();renderStrip();renderDay()}
-  else if(d.qa){if(d.qa==='taxi'){heroTaxi?showTaxi(heroTaxi):(showTab('hilfe'),showSeg('taxi'))}else if(d.qa==='saetze'){showTab('hilfe');showSeg('saetze')}else if(d.qa==='geld'){showTab('ausgaben');document.getElementById('eAmt').focus()}else{showTab('hilfe')}}
+  else if(d.qa){if(d.qa==='taxi'){heroTaxi?showTaxi(heroTaxi):(showTab('hilfe'),showSeg('taxi'))}else if(d.qa==='hotel'){showTaxi(hotelNow().id)}else if(d.qa==='saetze'){showTab('hilfe');showSeg('saetze')}else if(d.qa==='geld'){showTab('ausgaben');document.getElementById('eAmt').focus()}else{showTab('hilfe')}}
   else if(d.taxi)showTaxi(d.taxi);
-  else if(d.extaxi){const q=EX.find(y=>y.id===d.extaxi);showBig(`<div class="hint">请带我去这里 · 谢谢</div><div class="zh">${q.zh}</div><div class="de">${q.name}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>`)}
+  else if(d.extaxi)showTaxi('ex:'+d.extaxi);
   else if(d.excity){exCity=d.excity;renderEx();renderFood();closeSheet();showTab('ausfluege')}
   else if(d.dseg)showDseg(d.dseg);
   else if(d.foodcu){foodCu=d.foodcu;renderFood()}
   else if(d.food)openFood(d.food);
-  else if(d.foodtaxi){const f=FOOD.find(y=>y.id===d.foodtaxi);showBig(`<div class="hint">请带我去这里 · 谢谢</div><div class="zh">${f.zh}</div><div class="de">${f.name}<br>„Bitte bringen Sie mich hierhin. Danke.“</div>`)}
+  else if(d.foodtaxi){const f=FOOD.find(y=>y.id===d.foodtaxi);showPlace(f.zh,f.name)}
+  else if(d.say!==undefined)say(d.say);
   else if(d.pkdel){packOwn=packOwn.filter(x=>x.id!==d.pkdel);store.set('cr-packown',packOwn);renderPack()}
   else if(d.star){fav[d.star]=!fav[d.star];store.set('cr-fav',fav);renderEx();if(b.closest('#sheet'))openEx(d.star)}
   else if(b.hasAttribute('data-overview')){ovFilter=null;openOverview()}
@@ -1176,6 +1276,51 @@ async function addFiles(files){
   busy.textContent=bad?`${bad} ${bad>1?'Fotos konnten':'Foto konnte'} nicht gespeichert werden.`:'';busy.hidden=!bad;
 }
 
+/* Aufnahmedatum aus den EXIF-Daten (JPEG), z. B. "2026-11-20" */
+function exifDate(v,t){const le=v.getUint16(t)===0x4949,u16=o=>v.getUint16(t+o,le),u32=o=>v.getUint32(t+o,le);
+  const ifd=off=>{const n=u16(off),o={};for(let i=0;i<n;i++){const e=off+2+i*12;o[u16(e)]=e}return o};
+  const str=e=>{const n=u32(e+4),off=n>4?u32(e+8):e+8;let s='';for(let i=0;i<n-1;i++)s+=String.fromCharCode(v.getUint8(t+off+i));return s};
+  const i0=ifd(u32(4));let d=null;if(i0[0x8769]){const ex=ifd(u32(i0[0x8769]+8));if(ex[0x9003])d=str(ex[0x9003])}if(!d&&i0[0x0132])d=str(i0[0x0132]);
+  const m=d&&d.match(/^(\d{4}):(\d{2}):(\d{2})/);return m?`${m[1]}-${m[2]}-${m[3]}`:null}
+async function shotDate(file){try{const v=new DataView(await file.slice(0,262144).arrayBuffer());if(v.getUint16(0)!==0xFFD8)return null;let o=2;
+  while(o+10<v.byteLength){const m=v.getUint16(o),len=v.getUint16(o+2);if(m===0xFFE1&&v.getUint32(o+4)===0x45786966)return exifDate(v,o+10);if((m&0xFF00)!==0xFF00||m===0xFFDA)break;o+=2+len}}catch(e){}return null}
+async function sortFiles(files){
+  files=[...files].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));if(!files.length)return;
+  const out=document.getElementById('tbSortInfo');out.hidden=false;let k=0,ok=0,skip=0,bad=0;const days=new Set();
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
+  for(const f of files){k++;out.textContent=`Foto ${k} von ${files.length} …`;
+    const iso=await shotDate(f);if(!iso||!DAYS.includes(iso)){skip++;continue}
+    try{const r=await shrink(f);await tx(['photos'],'readwrite',t=>{t.objectStore('photos').put({id:uid(),date:iso,created:Date.now()+k,w:r.w,h:r.h,blob:r.blob,thumb:r.thumb})});ok++;days.add(iso)}catch(e){bad++}}
+  out.textContent=`${ok} ${ok===1?'Foto':'Fotos'} an ${days.size} ${days.size===1?'Tag':'Tagen'} einsortiert.`+(skip?` ${skip} ohne Aufnahmedatum aus der Reise – die bitte direkt beim Tag hinzufügen.`:'')+(bad?` ${bad} ließen sich nicht lesen.`:'');
+  renderList();
+}
+
+/* Rückblick: ein Bild mit einem Foto pro Tag zum Teilen */
+async function openReview(){
+  cur=null;freeUrls();
+  edit.innerHTML=`<div class="daynav"><button class="btn ghost" data-tbback>‹ Alle Tage</button></div><h2 class="vh">Rückblick</h2>
+   <section class="card tb-review"><div class="note" id="rvInfo">Bild wird erstellt …</div><canvas id="rvCanvas" width="1080" height="10"></canvas>
+   <div class="btns"><button class="btn primary" type="button" id="rvShare" disabled>Bild teilen oder sichern</button></div>
+   <p class="note" style="margin:0">Pro Tag wird das erste Foto genommen. Ein anderes Foto zuerst? Dann die übrigen Fotos des Tages löschen und neu hinzufügen.</p></section>`;
+  home.hidden=true;edit.hidden=false;window.scrollTo(0,0);
+  let ph=[];try{ph=await getAll('photos')}catch(e){}
+  const W=1080,P=24,C=3,T=Math.floor((W-P*(C+1))/C),H0=210,rows=Math.ceil(DAYS.length/C),H=H0+rows*(T+P)+70;
+  const c=document.getElementById('rvCanvas');c.height=H;const g=c.getContext('2d');const F='system-ui,-apple-system,Segoe UI,Roboto,sans-serif';
+  g.fillStyle='#0B0C0D';g.fillRect(0,0,W,H);g.fillStyle='#F4F5F6';g.font=`700 64px ${F}`;g.fillText('China 2026',P,96);
+  g.fillStyle='#9AA1A8';g.font=`500 30px ${F}`;g.fillText('13.–27. November · '+[...new Set(STOPS.map(s_=>s_[0].replace(' Pudong','')))].join(' · '),P,146,W-2*P);
+  for(let i=0;i<DAYS.length;i++){const iso=DAYS[i],x=P+(i%C)*(T+P),y=H0+Math.floor(i/C)*(T+P);const p=ph.filter(q=>q.date===iso).sort((a,b)=>a.created-b.created)[0];
+    g.fillStyle='#1B1E21';g.fillRect(x,y,T,T);
+    if(p){try{const {im,u}=await loadImg(p.blob);const s_=Math.max(T/im.naturalWidth,T/im.naturalHeight),w=im.naturalWidth*s_,h=im.naturalHeight*s_;g.save();g.beginPath();g.rect(x,y,T,T);g.clip();g.drawImage(im,x+(T-w)/2,y+(T-h)/2,w,h);g.restore();URL.revokeObjectURL(u)}catch(e){}}
+    const gr=g.createLinearGradient(0,y+T*.55,0,y+T);gr.addColorStop(0,'rgba(11,12,13,0)');gr.addColorStop(1,'rgba(11,12,13,.85)');g.fillStyle=gr;g.fillRect(x,y+T*.55,T,T*.45);
+    const f=fmtDay(iso);g.fillStyle='#F4F5F6';g.font=`700 34px ${F}`;g.fillText(`${f.dn}.11.`,x+16,y+T-52);g.font=`500 24px ${F}`;g.fillStyle='#C9CED2';g.fillText(cityShort(iso),x+16,y+T-20,T-32)}
+  g.fillStyle='#6B7278';g.font=`500 26px ${F}`;g.fillText(`${DAYS.length} Tage · ${ph.length} ${ph.length===1?'Foto':'Fotos'}`,P,H-30);
+  document.getElementById('rvInfo').textContent=ph.length?'':'Noch keine Fotos im Tagebuch – der Rückblick füllt sich mit der Reise.';
+  const btn=document.getElementById('rvShare');btn.disabled=false;
+  btn.onclick=()=>c.toBlob(async b=>{if(!b)return;const file=new File([b],'china-rueckblick.jpg',{type:'image/jpeg'});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'China 2026'});return}catch(e){if(e&&e.name==='AbortError')return}}
+    const a=document.createElement('a');a.href=URL.createObjectURL(file);a.download=file.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)},'image/jpeg',.9);
+}
+
 /* Großansicht */
 function showPhoto(k){
   if(!viewer){viewer=document.createElement('div');viewer.className='tb-photo';viewer.setAttribute('role','dialog');viewer.setAttribute('aria-modal','true');viewer.setAttribute('aria-label','Foto');document.body.appendChild(viewer)}
@@ -1194,7 +1339,8 @@ const unb64=async s=>(await fetch(s)).blob();
 async function exportAll(){
   const btn=document.getElementById('tbExport'),t0=btn.textContent;btn.disabled=true;btn.textContent='Backup wird erstellt …';
   try{const [days,ph]=await Promise.all([getAll('days'),getAll('photos')]);
-    const out={app:'china-reise-tagebuch',version:1,exported:new Date().toISOString(),days,photos:[]};
+    const local={};try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('cr-'))local[k]=localStorage.getItem(k)}}catch(e){}
+    const out={app:'china-reise-tagebuch',version:2,exported:new Date().toISOString(),days,photos:[],local};
     for(const p of ph)out.photos.push({id:p.id,date:p.date,created:p.created,w:p.w,h:p.h,data:await b64(p.blob)});
     const name=`china-tagebuch-${new Date().toISOString().slice(0,10)}.json`;
     const file=new File([JSON.stringify(out)],name,{type:'application/json'});
@@ -1206,16 +1352,18 @@ async function exportAll(){
 async function importFile(f){
   let data;try{data=JSON.parse(await f.text())}catch(e){alert('Diese Datei ist kein Tagebuch-Backup.');return}
   if(!data||data.app!=='china-reise-tagebuch'||!Array.isArray(data.days)||!Array.isArray(data.photos)){alert('Diese Datei ist kein Tagebuch-Backup.');return}
-  if(!confirm(`Backup vom ${new Date(data.exported).toLocaleString('de-DE')} wiederherstellen?\n\n${data.days.length} Tage, ${data.photos.length} Fotos. Das ersetzt das Tagebuch auf diesem Gerät.`))return;
+  const local=data.local&&typeof data.local==='object'?Object.entries(data.local).filter(([k,v])=>k.startsWith('cr-')&&typeof v==='string'):[];
+  if(!confirm(`Backup vom ${new Date(data.exported).toLocaleString('de-DE')} wiederherstellen?\n\n${data.days.length} Tage, ${data.photos.length} Fotos${local.length?', dazu Ausgaben, Häkchen und Listen':''}. Das ersetzt die Daten auf diesem Gerät.`))return;
   info.textContent='Wird wiederhergestellt …';
   try{const ph=[];for(const p of data.photos){const blob=await unb64(p.data);const {im,u}=await loadImg(blob);let th;try{th=await scale(im,THUMB,.7)}finally{URL.revokeObjectURL(u)}ph.push({id:p.id,date:p.date,created:p.created,w:p.w,h:p.h,blob,thumb:th.b})}
     await tx(['days','photos'],'readwrite',t=>{const ds=t.objectStore('days'),ps=t.objectStore('photos');ds.clear();ps.clear();data.days.forEach(d=>d&&d.date&&ds.put({date:d.date,text:String(d.text||''),updated:d.updated||Date.now()}));ph.forEach(p=>ps.put(p))});
+    if(local.length){try{local.forEach(([k,v])=>localStorage.setItem(k,v))}catch(e){}alert('Backup wiederhergestellt. Die App lädt neu.');location.reload();return}
     await renderList();alert('Tagebuch wiederhergestellt.');
   }catch(e){alert('Wiederherstellen fehlgeschlagen: '+e.message);renderList()}
 }
 
 document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-tbday],[data-tbback],[data-tbph],[data-tbclose],[data-tbdel],#tbExport');if(!b)return;const d=b.dataset;
+  const b=e.target.closest('[data-tbday],[data-tbback],[data-tbph],[data-tbclose],[data-tbdel],[data-tbreview],#tbExport');if(!b)return;const d=b.dataset;
   if(d.tbday!==undefined){if(!d.tbday)return;saveText();openDay(d.tbday)}
   else if(b.hasAttribute('data-tbback')){saveText().then(()=>{cur=null;edit.hidden=true;home.hidden=false;renderList();window.scrollTo(0,0)})}
   else if(d.tbph!==undefined)showPhoto(+d.tbph);
@@ -1223,16 +1371,19 @@ document.addEventListener('click',e=>{
   else if(d.tbdel!==undefined){const k=+d.tbdel;if(delArmTb!==k){delArmTb=k;b.classList.add('confirm');b.textContent='Wirklich löschen?';return}
     const p=photos[k];tx(['photos'],'readwrite',t=>{t.objectStore('photos').delete(p.id)}).then(()=>{photos.splice(k,1);renderGrid();photos.length?showPhoto(Math.min(k,photos.length-1)):closePhoto()}).catch(err=>alert('Löschen fehlgeschlagen: '+err.message))}
   else if(b.id==='tbExport')exportAll();
+  else if(b.hasAttribute('data-tbreview'))openReview();
 });
 document.addEventListener('input',e=>{if(e.target.id==='tbText'){const s=document.getElementById('tbSaved');if(s)s.textContent='…';clearTimeout(saveT);saveT=setTimeout(saveText,600)}});
 document.addEventListener('change',e=>{const t=e.target;
   if(t.id==='tbCam'||t.id==='tbLib'){const fs=[...t.files];t.value='';addFiles(fs)}
-  else if(t.id==='tbImport'){const f=t.files[0];t.value='';if(f)importFile(f)}});
+  else if(t.id==='tbImport'){const f=t.files[0];t.value='';if(f)importFile(f)}
+  else if(t.id==='tbSort'){const fs=[...t.files];t.value='';sortFiles(fs)}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&viewer&&!viewer.hidden){e.stopImmediatePropagation();closePhoto()}},true);
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveT)saveText()});
 window.addEventListener('pagehide',()=>{if(saveT)saveText()});
 /* Beim Wechsel auf den Tab die Liste frisch zeigen */
 document.getElementById('tab-tagebuch').addEventListener('click',()=>{if(saveT)saveText();cur=null;edit.hidden=true;home.hidden=false;renderList()});
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
 renderList();
 })();
 </script>
